@@ -18,8 +18,7 @@ export function PersonalisedBlock({ user }: PersonalisedBlockProps) {
       <div className="mt-3 rounded-lg bg-indigo-500/10 p-4 text-indigo-200">
         <p className="font-medium">Variant for Segment A (Enterprise)</p>
         <p className="mt-1 text-sm">
-          Hello {user.name}. This block was rendered on the server for Segment A. It highlights
-          enterprise features and support.
+          Hello {user.name}. This block was rendered on the server for Segment A.
         </p>
       </div>
     );
@@ -29,8 +28,7 @@ export function PersonalisedBlock({ user }: PersonalisedBlockProps) {
     <div className="mt-3 rounded-lg bg-amber-500/10 p-4 text-amber-200">
       <p className="font-medium">Variant for Segment B (Startup)</p>
       <p className="mt-1 text-sm">
-        Hey {user.name}. This block was rendered on the server for Segment B. It highlights growth
-        and agility.
+        Hey {user.name}. This block was rendered on the server for Segment B.
       </p>
     </div>
   );
