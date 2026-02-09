@@ -1,0 +1,40 @@
+{
+  "users": [
+    {
+      "id": "user-1",
+      "email": "alice@enterprise.com",
+      "name": "Alice Chen",
+      "segment": "A"
+    },
+    {
+      "id": "user-2",
+      "email": "bob@startup.io",
+      "name": "Bob Martinez",
+      "segment": "B"
+    },
+    {
+      "id": "user-3",
+      "email": "carol@enterprise.com",
+      "name": "Carol Williams",
+      "segment": "A"
+    },
+    {
+      "id": "user-4",
+      "email": "dave@startup.io",
+      "name": "Dave Kim",
+      "segment": "B"
+    },
+    {
+      "id": "user-5",
+      "email": "eve@enterprise.com",
+      "name": "Eve Johnson",
+      "segment": "A"
+    },
+    {
+      "id": "user-6",
+      "email": "frank@startup.io",
+      "name": "Frank Lee",
+      "segment": "B"
+    }
+  ]
+}
