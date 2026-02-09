@@ -27,14 +27,14 @@ const scenarios = [
     title: "Scenario 4",
     subtitle: "Middleware + Server Component hybrid",
     description:
-      "Middleware determines segment. Page is a static shell. Server Component fetches segment-based data. Cache can be per segment.",
+      "Middleware determines segment. Page is a static shell. Server Component fetches segment-based data. Response not CDN-cached (Next.js data cache can be per segment only).",
   },
   {
     href: "/scenario-5",
     title: "Scenario 5",
     subtitle: "Streaming + partial personalization",
     description:
-      "Initial static page streams instantly. Personalized sections stream in server-side afterwards (RSC streaming).",
+      "Initial static page streams instantly. Personalized sections stream in server-side afterwards (RSC streaming). Response not CDN-cached.",
   },
   {
     href: "/scenario-6",

@@ -47,7 +47,7 @@ export default async function Scenario3SegmentPage({ params }: PageProps) {
         contentServedFromCdn={true}
         contentServedFromCdnNote="whole page is static per segment, CDN-cached"
         secondRequestFromCache={true}
-        secondRequestFromCacheNote="same segment gets same static page from CDN"
+        secondRequestFromCacheNote="same segment gets same static page from CDN cache"
         steps={[
           "Request hits Vercel edge; middleware runs before the page.",
           "Middleware reads the segment from cookies (e.g. personalisation-segment). Defaults to A if missing.",

@@ -62,7 +62,7 @@ export default function Scenario6Page() {
         contentServedFromCdn={true}
         contentServedFromCdnNote="whole page is static, CDN-cached"
         secondRequestFromCache={true}
-        secondRequestFromCacheNote="page from CDN; no API; client reveals variant from cookie"
+        secondRequestFromCacheNote="page from CDN cache; no API; client reveals variant from cookie"
         steps={[
           "Page is pre-rendered at build time (SSG). No cookies(), headers(), or async data — so it stays static.",
           "Both Segment A and Segment B content are embedded in the same HTML (two blocks in the page).",

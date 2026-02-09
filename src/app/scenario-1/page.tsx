@@ -37,7 +37,7 @@ export default async function Scenario1Page() {
         contentServedFromCdn={false}
         contentServedFromCdnNote="server-rendered per request"
         secondRequestFromCache={false}
-        secondRequestFromCacheNote="each request is server-rendered"
+        secondRequestFromCacheNote="each request is server-rendered; response not CDN-cached"
         steps={[
           "Request hits the Next.js server (no middleware runs for this route).",
           "Page is rendered as a Server Component (RSC).",
@@ -45,7 +45,7 @@ export default async function Scenario1Page() {
           "Server looks up the user (e.g. from mock data) and chooses the variant (Segment A or B).",
           "Personalised block is rendered on the server with the chosen variant.",
           "Full HTML is streamed to the client. No client-side JS is needed for the personalised content.",
-          "Second request (same user/segment): No — the page is dynamic; each request is re-rendered on the server. Same user visiting again does not get a cached response unless you add caching (e.g. unstable_cache or segment-based cache).",
+          "Second request (same user/segment): No — the page is dynamic; each request is re-rendered on the server. The response is not CDN-cached. (Next.js unstable_cache or segment-based data cache would only cache data on the server, not the response at CDN.)",
         ]}
         vercelUsage={[
           "Every page view = 1 Serverless Function invocation (full SSR).",

@@ -33,9 +33,9 @@ export default function Scenario7Page() {
         title="How this scenario works"
         middlewareUsed={false}
         contentServedFromCdn={true}
-        contentServedFromCdnNote="API response on cache hit (second request same user)"
+        contentServedFromCdnNote="API response from CDN on cache hit (second request same user)"
         secondRequestFromCache={true}
-        secondRequestFromCacheNote="page from CDN; API response from CDN if same user within cache TTL"
+        secondRequestFromCacheNote="page and API response from CDN cache when same user within TTL"
         steps={[
           "Page is pre-rendered at build time (SSG). No middleware runs.",
           "Static HTML is served from CDN. Client hydrates and calls GET /api/user-content (cookie: userId).",

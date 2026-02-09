@@ -34,7 +34,7 @@ export default function Scenario2Page() {
         contentServedFromCdn={false}
         contentServedFromCdnNote="client-rendered after hydration; page shell can be from CDN"
         secondRequestFromCache={true}
-        secondRequestFromCacheNote="page HTML from CDN; personalised block filled client-side again"
+        secondRequestFromCacheNote="page HTML from CDN cache; personalised block filled client-side again"
         steps={[
           "Page is pre-rendered at build time (or served from CDN). No middleware runs.",
           "Static HTML is sent to the client; the page shell is identical for all users.",

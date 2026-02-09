@@ -51,7 +51,7 @@ export function ScenarioExplanation({
           )}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-zinc-500">Second request (same user/segment) from cache:</span>
+          <span className="text-zinc-500">Second request (same user/segment) from CDN cache:</span>
           <span
             className={
               secondRequestFromCache

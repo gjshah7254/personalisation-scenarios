@@ -48,7 +48,7 @@ export default async function Scenario8Page() {
         contentServedFromCdn={false}
         contentServedFromCdnNote="server-rendered per request"
         secondRequestFromCache={false}
-        secondRequestFromCacheNote="same user gets cached data (fewer backend calls); full response still from server"
+        secondRequestFromCacheNote="Next.js data cache (fewer backend calls); full response still from origin, not CDN-cached"
         steps={[
           "Request hits the server. Page is an async RSC.",
           "Server reads userId from cookies (getUserIdFromCookie).",
