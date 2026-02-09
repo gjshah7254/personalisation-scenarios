@@ -59,7 +59,7 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
       "All users in segment A share the same cached response; same for segment B.",
     ],
     vercelUsage: [
-      "Two cache entries per resource (segment A and B). Very high cache hit rate.",
+      "Two cache entries per resource (segment A and B). Very high cache hit rate. Vercel CDN hit for even first time visit.",
       "Minimal serverless invocations after initial cache fill.",
       "No Edge Middleware required.",
     ],
