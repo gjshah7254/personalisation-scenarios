@@ -6,12 +6,12 @@ async function getSegmentData(segment: Segment | undefined) {
   if (segment === "A") {
     return {
       title: "Enterprise features",
-      items: ["24/7 support", "SLA guarantee", "Dedicated success manager"],
+      items: [],
     };
   }
   return {
     title: "Startup features",
-    items: ["Self-serve", "Community", "Docs & tutorials"],
+    items: [],
   };
 }
 
