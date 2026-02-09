@@ -44,6 +44,12 @@ export default function Scenario2Page() {
           "Personalisation happens entirely in the browser after the initial load.",
           "Second request (same user/segment): Yes for the page HTML — it is served from CDN cache (same static page for everyone). The personalised block is still filled in on the client after hydration; the API may be cached by the browser or CDN.",
         ]}
+        vercelUsage={[
+          "Page HTML/JS/assets: served from CDN (no serverless function for the page).",
+          "Each page load triggers 1 API route invocation (GET /api/me) from the client.",
+          "No Edge Middleware invocations.",
+          "Lower function usage than Scenario 1: one light API call per view instead of full SSR.",
+        ]}
       />
     </div>
   );

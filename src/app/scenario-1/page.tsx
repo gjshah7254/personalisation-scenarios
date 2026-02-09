@@ -47,6 +47,12 @@ export default async function Scenario1Page() {
           "Full HTML is streamed to the client. No client-side JS is needed for the personalised content.",
           "Second request (same user/segment): No — the page is dynamic; each request is re-rendered on the server. Same user visiting again does not get a cached response unless you add caching (e.g. unstable_cache or segment-based cache).",
         ]}
+        vercelUsage={[
+          "Every page view = 1 Serverless Function invocation (full SSR).",
+          "No Edge Middleware invocations for this route.",
+          "Bandwidth: full HTML response from origin on every request (no CDN cache for this dynamic route by default).",
+          "Usage scales with traffic: more visitors = more function invocations and higher cost.",
+        ]}
       />
     </div>
   );

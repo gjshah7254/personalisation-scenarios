@@ -56,6 +56,12 @@ export default function Scenario5Page() {
           "RSC streaming allows partial personalisation without blocking the whole page on server work.",
           "Second request (same user/segment): No — the page and streamed block are rendered on the server again. Same user visiting again gets a fresh server render unless you add caching (e.g. per-user or per-segment cache for the streamed component).",
         ]}
+        vercelUsage={[
+          "Every page view = 1 Serverless Function invocation (streaming SSR; function may stay open until stream completes).",
+          "No Edge Middleware invocations for this route.",
+          "Bandwidth: streamed response from origin each time.",
+          "Usage similar to Scenario 1; streaming can mean slightly longer function duration per request.",
+        ]}
       />
     </div>
   );

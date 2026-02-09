@@ -48,6 +48,12 @@ export default async function Scenario4Page() {
           "Result: static shell plus server-rendered, segment-specific sections; good balance of cache and personalisation.",
           "Second request (same user/segment): No by default — the RSC runs again and fetches segment data per request. If you add per-segment caching (e.g. fetch cache or unstable_cache with segment key), the second request for the same segment can be served from cache.",
         ]}
+        vercelUsage={[
+          "If middleware is used: 1 Edge Middleware invocation per request.",
+          "Every page view = 1 Serverless Function invocation (RSC reads segment, fetches data).",
+          "Bandwidth: full response from origin unless you add per-segment response caching.",
+          "Similar to Scenario 1 in usage; middleware adds a small amount of edge compute.",
+        ]}
       />
     </div>
   );

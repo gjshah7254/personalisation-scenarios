@@ -55,6 +55,12 @@ export default async function Scenario3SegmentPage({ params }: PageProps) {
           "Whole page is personalised by segment; no per-component logic—the entire page variant is static.",
           "Second request (same user/segment): Yes — the same segment gets the same pre-built static page from CDN cache. No server or edge run; response is fully cached per segment.",
         ]}
+        vercelUsage={[
+          "Every request: 1 Edge Middleware invocation (reads cookie, rewrites URL; runs at the edge, low cost).",
+          "Page response: served from CDN; no Serverless Function invocation for the page.",
+          "Bandwidth: from CDN after first request per segment; origin not hit for cached responses.",
+          "Lowest serverless usage: only middleware runs; page is static and CDN-cached.",
+        ]}
       />
     </div>
   );

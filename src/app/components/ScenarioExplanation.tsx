@@ -6,6 +6,7 @@ interface ScenarioExplanationProps {
   secondRequestFromCache: boolean;
   secondRequestFromCacheNote?: string;
   steps: string[];
+  vercelUsage: string[];
 }
 
 export function ScenarioExplanation({
@@ -16,6 +17,7 @@ export function ScenarioExplanation({
   secondRequestFromCache,
   secondRequestFromCacheNote,
   steps,
+  vercelUsage,
 }: ScenarioExplanationProps) {
   return (
     <section className="rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
@@ -72,6 +74,14 @@ export function ScenarioExplanation({
           <li key={i}>{step}</li>
         ))}
       </ol>
+      <h3 className="mt-6 text-sm font-medium uppercase tracking-wider text-zinc-500">
+        Vercel usage
+      </h3>
+      <ul className="mt-2 list-inside list-disc space-y-1.5 text-sm text-zinc-300">
+        {vercelUsage.map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
+      </ul>
     </section>
   );
 }
