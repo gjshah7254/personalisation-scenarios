@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ScenarioExplanation } from "@/app/components/ScenarioExplanation";
 import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
 import { ClientPersonalisedBlock } from "./ClientPersonalisedBlock";
 
@@ -26,6 +27,24 @@ export default function Scenario2Page() {
         </h2>
         <ClientPersonalisedBlock />
       </div>
+
+      <ScenarioExplanation
+        title="How this scenario works"
+        middlewareUsed={false}
+        contentServedFromCdn={false}
+        contentServedFromCdnNote="client-rendered after hydration; page shell can be from CDN"
+        secondRequestFromCache={true}
+        secondRequestFromCacheNote="page HTML from CDN; personalised block filled client-side again"
+        steps={[
+          "Page is pre-rendered at build time (or served from CDN). No middleware runs.",
+          "Static HTML is sent to the client; the page shell is identical for all users.",
+          "Client-side JS hydrates the page. The personalised block is a Client Component.",
+          "The client component runs in the browser and calls an API (e.g. GET /api/me) to get the current user/segment from cookies.",
+          "Once the API returns, the component re-renders with the correct variant (Segment A or B).",
+          "Personalisation happens entirely in the browser after the initial load.",
+          "Second request (same user/segment): Yes for the page HTML — it is served from CDN cache (same static page for everyone). The personalised block is still filled in on the client after hydration; the API may be cached by the browser or CDN.",
+        ]}
+      />
     </div>
   );
 }

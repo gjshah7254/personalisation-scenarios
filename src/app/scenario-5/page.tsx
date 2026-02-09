@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { ScenarioExplanation } from "@/app/components/ScenarioExplanation";
 import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
 import { StreamedPersonalisedBlock } from "./StreamedPersonalisedBlock";
 
@@ -38,6 +39,24 @@ export default function Scenario5Page() {
           <StreamedPersonalisedBlock />
         </Suspense>
       </div>
+
+      <ScenarioExplanation
+        title="How this scenario works"
+        middlewareUsed={false}
+        contentServedFromCdn={false}
+        contentServedFromCdnNote="streamed from server, not pre-cached"
+        secondRequestFromCache={false}
+        secondRequestFromCacheNote="streamed from server each time unless you add caching"
+        steps={[
+          "Request hits the server. No middleware is used for personalisation on this route.",
+          "The page shell (including static content and the Suspense fallback) streams to the client first so the user sees content immediately.",
+          "Meanwhile, the server resolves the async personalised block (StreamedPersonalisedBlock): reads cookies, looks up user, chooses variant.",
+          "When the personalised block is ready, it is streamed as the next RSC chunk and replaces the Suspense fallback.",
+          "User sees static shell first, then personalised content when ready—reducing perceived latency while still personalising server-side.",
+          "RSC streaming allows partial personalisation without blocking the whole page on server work.",
+          "Second request (same user/segment): No — the page and streamed block are rendered on the server again. Same user visiting again gets a fresh server render unless you add caching (e.g. per-user or per-segment cache for the streamed component).",
+        ]}
+      />
     </div>
   );
 }

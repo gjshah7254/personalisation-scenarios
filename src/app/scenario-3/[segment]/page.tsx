@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Segment } from "@/lib/types";
+import { ScenarioExplanation } from "@/app/components/ScenarioExplanation";
 import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
 
 interface PageProps {
@@ -37,6 +38,24 @@ export default async function Scenario3SegmentPage({ params }: PageProps) {
         </h2>
         <SegmentContent segment={seg} />
       </div>
+
+      <ScenarioExplanation
+        title="How this scenario works"
+        middlewareUsed={true}
+        contentServedFromCdn={true}
+        contentServedFromCdnNote="whole page is static per segment, CDN-cached"
+        secondRequestFromCache={true}
+        secondRequestFromCacheNote="same segment gets same static page from CDN"
+        steps={[
+          "Request hits Vercel edge; middleware runs before the page.",
+          "Middleware reads the segment from cookies (e.g. personalisation-segment). Defaults to A if missing.",
+          "Middleware rewrites the URL: /scenario-3 → /scenario-3/A or /scenario-3/B (internal rewrite; browser URL stays /scenario-3).",
+          "Next.js serves the matching static page from generateStaticParams (pre-built at build time for A and B).",
+          "Response is served from CDN; each segment has its own cached static HTML. No server render at request time.",
+          "Whole page is personalised by segment; no per-component logic—the entire page variant is static.",
+          "Second request (same user/segment): Yes — the same segment gets the same pre-built static page from CDN cache. No server or edge run; response is fully cached per segment.",
+        ]}
+      />
     </div>
   );
 }

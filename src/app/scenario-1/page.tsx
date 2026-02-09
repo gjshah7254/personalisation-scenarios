@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getUserIdFromCookie } from "@/lib/cookies";
 import { getUserById } from "@/lib/users";
+import { ScenarioExplanation } from "@/app/components/ScenarioExplanation";
 import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
 import { PersonalisedBlock } from "./PersonalisedBlock";
 
@@ -29,6 +30,24 @@ export default async function Scenario1Page() {
         </h2>
         <PersonalisedBlock user={user} />
       </div>
+
+      <ScenarioExplanation
+        title="How this scenario works"
+        middlewareUsed={false}
+        contentServedFromCdn={false}
+        contentServedFromCdnNote="server-rendered per request"
+        secondRequestFromCache={false}
+        secondRequestFromCacheNote="each request is server-rendered"
+        steps={[
+          "Request hits the Next.js server (no middleware runs for this route).",
+          "Page is rendered as a Server Component (RSC).",
+          "Server reads the user/segment from cookies (e.g. personalisation-user-id, personalisation-segment).",
+          "Server looks up the user (e.g. from mock data) and chooses the variant (Segment A or B).",
+          "Personalised block is rendered on the server with the chosen variant.",
+          "Full HTML is streamed to the client. No client-side JS is needed for the personalised content.",
+          "Second request (same user/segment): No — the page is dynamic; each request is re-rendered on the server. Same user visiting again does not get a cached response unless you add caching (e.g. unstable_cache or segment-based cache).",
+        ]}
+      />
     </div>
   );
 }
