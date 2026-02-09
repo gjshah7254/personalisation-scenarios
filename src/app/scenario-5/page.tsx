@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
 import { StreamedPersonalisedBlock } from "./StreamedPersonalisedBlock";
 
 function Placeholder() {
@@ -26,6 +27,8 @@ export default function Scenario5Page() {
           briefly.
         </p>
       </div>
+
+      <StaticBuildTimeBlock />
 
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">

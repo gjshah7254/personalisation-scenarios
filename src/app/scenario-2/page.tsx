@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
 import { ClientPersonalisedBlock } from "./ClientPersonalisedBlock";
 
 export default function Scenario2Page() {
@@ -16,6 +17,8 @@ export default function Scenario2Page() {
           fetches the current user and renders the right variant in the browser.
         </p>
       </div>
+
+      <StaticBuildTimeBlock />
 
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">

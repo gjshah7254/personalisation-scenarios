@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSegmentFromCookie } from "@/lib/cookies";
+import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
 import { SegmentDataBlock } from "./SegmentDataBlock";
 
 export default async function Scenario4Page() {
@@ -20,6 +21,8 @@ export default async function Scenario4Page() {
           configured per segment.
         </p>
       </div>
+
+      <StaticBuildTimeBlock />
 
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Segment } from "@/lib/types";
+import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
 
 interface PageProps {
   params: Promise<{ segment: string }>;
@@ -27,6 +28,8 @@ export default async function Scenario3SegmentPage({ params }: PageProps) {
           This page is pre-generated at build (generateStaticParams) and CDN-cached per segment.
         </p>
       </div>
+
+      <StaticBuildTimeBlock />
 
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">

@@ -21,6 +21,8 @@ export default async function Scenario1Page() {
         </p>
       </div>
 
+      <StaticBuildTimeBlock />
+
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
           Personalised content (RSC)
