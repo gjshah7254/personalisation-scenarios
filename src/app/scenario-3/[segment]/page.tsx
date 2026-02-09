@@ -7,6 +7,8 @@ interface PageProps {
   params: Promise<{ segment: string }>;
 }
 
+export const dynamic = "force-static";
+
 export async function generateStaticParams() {
   return [{ segment: "A" }, { segment: "B" }];
 }

@@ -1,17 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { User } from "@/lib/types";
 
 interface UserSwitcherProps {
   users: User[];
-  currentUserId?: string;
 }
 
-export function UserSwitcher({ users, currentUserId }: UserSwitcherProps) {
+export function UserSwitcher({ users }: UserSwitcherProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((data: { user: User | null }) => setCurrentUserId(data.user?.id));
+  }, []);
 
   async function switchUser(userId: string) {
     await fetch("/api/set-user", {
@@ -20,6 +26,7 @@ export function UserSwitcher({ users, currentUserId }: UserSwitcherProps) {
       body: JSON.stringify({ userId }),
     });
     setOpen(false);
+    setCurrentUserId(userId);
     router.refresh();
   }
 

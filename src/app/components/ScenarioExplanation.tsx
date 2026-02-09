@@ -22,8 +22,8 @@ export function ScenarioExplanation({
   return (
     <section className="rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
       <h2 className="text-lg font-semibold text-white">{title}</h2>
-      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-        <span className="flex items-center gap-2">
+      <div className="mt-2 flex flex-col gap-y-2 text-sm">
+        <div className="flex items-center gap-2">
           <span className="text-zinc-500">Middleware used for personalisation:</span>
           <span
             className={
@@ -34,8 +34,8 @@ export function ScenarioExplanation({
           >
             {middlewareUsed ? "Yes" : "No"}
           </span>
-        </span>
-        <span className="flex items-center gap-2">
+        </div>
+        <div className="flex items-center gap-2">
           <span className="text-zinc-500">Personalised content served from CDN cache:</span>
           <span
             className={
@@ -49,8 +49,8 @@ export function ScenarioExplanation({
           {contentServedFromCdnNote && (
             <span className="text-zinc-500">({contentServedFromCdnNote})</span>
           )}
-        </span>
-        <span className="flex items-center gap-2">
+        </div>
+        <div className="flex items-center gap-2">
           <span className="text-zinc-500">Second request (same user/segment) from cache:</span>
           <span
             className={
@@ -64,7 +64,7 @@ export function ScenarioExplanation({
           {secondRequestFromCacheNote && (
             <span className="text-zinc-500">({secondRequestFromCacheNote})</span>
           )}
-        </span>
+        </div>
       </div>
       <h3 className="mt-4 text-sm font-medium uppercase tracking-wider text-zinc-500">
         Technical steps

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { getUsers } from "@/lib/users";
-import { getUserIdFromCookie } from "@/lib/cookies";
 import { UserSwitcher } from "@/app/components/UserSwitcher";
 import Link from "next/link";
 
@@ -10,13 +9,12 @@ export const metadata: Metadata = {
   description: "Demo of 5 personalisation patterns with Next.js and Vercel",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const users = getUsers();
-  const currentUserId = await getUserIdFromCookie();
 
   return (
     <html lang="en">
@@ -26,7 +24,7 @@ export default async function RootLayout({
             <Link href="/" className="text-lg font-semibold text-white">
               Personalisation Scenarios
             </Link>
-            <UserSwitcher users={users} currentUserId={currentUserId} />
+            <UserSwitcher users={users} />
           </div>
         </header>
         <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
