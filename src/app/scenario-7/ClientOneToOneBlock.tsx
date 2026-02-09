@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 interface UserContent {
   user: { id: string; name: string; email: string; segment: string } | null;
   greeting: string | null;
-  recommendations: string[];
 }
 
 export function ClientOneToOneBlock() {
@@ -38,11 +37,6 @@ export function ClientOneToOneBlock() {
     <div className="mt-3 rounded-lg bg-indigo-500/10 p-4 text-indigo-200">
       <p className="font-medium">1:1 personalisation (cached API)</p>
       <p className="mt-1 text-sm">{content.greeting}, here&apos;s your content.</p>
-      <ul className="mt-2 list-inside list-disc text-sm">
-        {content.recommendations.map((rec) => (
-          <li key={rec}>{rec}</li>
-        ))}
-      </ul>
     </div>
   );
 }

@@ -37,14 +37,7 @@ export default async function Scenario8Page() {
         ) : (
           <div className="mt-3 rounded-lg bg-amber-500/10 p-4 text-amber-200">
             <p className="font-medium">1:1 personalisation (data cache)</p>
-            <p className="mt-1 text-sm">
-              Hello {content.user.name}, your recommendations:
-            </p>
-            <ul className="mt-2 list-inside list-disc text-sm">
-              {content.recommendations.map((rec) => (
-                <li key={rec}>{rec}</li>
-              ))}
-            </ul>
+            <p className="mt-1 text-sm">Hello {content.user.name}, here&apos;s your content.</p>
           </div>
         )}
       </div>
@@ -60,7 +53,7 @@ export default async function Scenario8Page() {
           "Request hits the server. Page is an async RSC.",
           "Server reads userId from cookies (getUserIdFromCookie).",
           "Server calls getUserContentCached(userId), which uses unstable_cache(..., [userId], { revalidate: 60 }).",
-          "First request for user X: cache miss — fetch runs (e.g. getUserById, build recommendations), result stored in Data Cache.",
+          "First request for user X: cache miss — fetch runs (e.g. getUserById), result stored in Data Cache.",
           "Second request for user X: cache hit — cached result returned; no refetch. Page still server-rendered (1 serverless inv), but the expensive data step is cached.",
           "1 serverless invocation per view; data fetch cached per user so backend/DB usage stays under control.",
         ]}

@@ -39,7 +39,7 @@ export default function Scenario7Page() {
         steps={[
           "Page is pre-rendered at build time (SSG). No middleware runs.",
           "Static HTML is served from CDN. Client hydrates and calls GET /api/user-content (cookie: userId).",
-          "API reads userId from cookie, returns 1:1 content (greeting, recommendations). Response sets Cache-Control: public, s-maxage=60, stale-while-revalidate=300.",
+          "API reads userId from cookie, returns 1:1 content (greeting). Response sets Cache-Control: public, s-maxage=60, stale-while-revalidate=300.",
           "CDN caches the API response per user (cache key includes user). First request for user X = 1 API invocation.",
           "Second request (same user): page from CDN; API response from CDN cache if within TTL — no function invocation.",
         ]}
