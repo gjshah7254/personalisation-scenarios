@@ -16,7 +16,7 @@ export function PersonalisedBlock({ user }: PersonalisedBlockProps) {
   if (user.segment === "A") {
     return (
       <div className="mt-3 rounded-lg bg-indigo-500/10 p-4 text-indigo-200">
-        <p className="font-medium">Variant for Segment A (Enterprise)</p>
+        <p className="font-medium">Variant for Segment A</p>
         <p className="mt-1 text-sm">
           Hello {user.name}. This block was rendered on the server for Segment A.
         </p>
@@ -26,7 +26,7 @@ export function PersonalisedBlock({ user }: PersonalisedBlockProps) {
 
   return (
     <div className="mt-3 rounded-lg bg-amber-500/10 p-4 text-amber-200">
-      <p className="font-medium">Variant for Segment B (Startup)</p>
+      <p className="font-medium">Variant for Segment B</p>
       <p className="mt-1 text-sm">
         Hey {user.name}. This block was rendered on the server for Segment B.
       </p>

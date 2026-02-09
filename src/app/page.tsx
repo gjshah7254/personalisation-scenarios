@@ -36,6 +36,27 @@ const scenarios = [
     description:
       "Initial static page streams instantly. Personalized sections stream in server-side afterwards (RSC streaming).",
   },
+  {
+    href: "/scenario-6",
+    title: "Scenario 6",
+    subtitle: "SSG with embedded variants (client reveals one)",
+    description:
+      "Page is fully static (SSG). Both segment variants are in the HTML; client reads segment cookie and shows one. No API or server for content.",
+  },
+  {
+    href: "/scenario-7",
+    title: "Scenario 7",
+    subtitle: "Client-side 1:1 with cached API",
+    description:
+      "SSG page; client fetches user content from API. API sets Cache-Control so response is CDN-cached per user.",
+  },
+  {
+    href: "/scenario-8",
+    title: "Scenario 8",
+    subtitle: "Server-side 1:1 with data cache",
+    description:
+      "RSC reads userId, fetches content via unstable_cache(userId). Data cached per user; 1 serverless inv per view.",
+  },
 ];
 
 export default function HomePage() {
