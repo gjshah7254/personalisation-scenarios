@@ -5,7 +5,7 @@ interface ScenarioExplanationProps {
   contentServedFromCdnNote?: string;
   secondRequestFromCache: boolean;
   secondRequestFromCacheNote?: string;
-  steps: string[];
+  steps: (string | React.ReactNode)[];
   vercelUsage: string[];
 }
 
@@ -71,7 +71,9 @@ export function ScenarioExplanation({
       </h3>
       <ol className="mt-2 list-inside list-decimal space-y-1.5 text-sm text-zinc-300">
         {steps.map((step, i) => (
-          <li key={i}>{step}</li>
+          <li key={i} className="[&_a]:text-indigo-400 [&_a]:underline [&_a]:hover:text-indigo-300">
+            {step}
+          </li>
         ))}
       </ol>
       <h3 className="mt-6 text-sm font-medium uppercase tracking-wider text-zinc-500">

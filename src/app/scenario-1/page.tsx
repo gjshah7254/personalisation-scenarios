@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getUserIdFromCookie } from "@/lib/cookies";
+import { getCurrentUserEmail } from "@/lib/cookies";
 import { getSalesforceUserContext } from "@/lib/salesforce";
 import { ScenarioExplanation } from "@/app/components/ScenarioExplanation";
 import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
@@ -8,8 +8,8 @@ import { PersonalisedBlock } from "./PersonalisedBlock";
 const COMPONENT_ID = "scenario-1-block" as const;
 
 export default async function Scenario1Page() {
-  const userId = await getUserIdFromCookie();
-  const sfContext = userId ? await getSalesforceUserContext(userId) : null;
+  const email = await getCurrentUserEmail();
+  const sfContext = email ? await getSalesforceUserContext(email) : null;
   const shouldPersonalise = sfContext?.personalisedComponentIds.includes(COMPONENT_ID) ?? false;
 
   return (
@@ -48,7 +48,7 @@ export default async function Scenario1Page() {
         steps={[
           "Request hits the Next.js server (no middleware runs for this route).",
           "Page is rendered as a Server Component (RSC).",
-          "Server reads userId from cookies and fetches user context from Salesforce (mock API: segment, personalised component IDs).",
+          "Server reads user email from cookies and fetches user context from Salesforce (mock API: segment, personalised component IDs).",
           "If this component is in the user's personalisedComponentIds, the server chooses the variant using the segment from Salesforce (A or B).",
           "Personalised block is rendered on the server with the chosen variant. Full HTML is streamed to the client.",
           "No client-side JS is needed for the personalised content.",

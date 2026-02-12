@@ -1,21 +1,25 @@
 {
-  "segmentPersonalisedComponents": {
+  "userSegments": {
+    "alice@enterprise.com": "A",
+    "bob@startup.io": "B",
+    "carol@enterprise.com": "A",
+    "dave@startup.io": "B",
+    "eve@enterprise.com": "A",
+    "frank@startup.io": "B"
+  },
+  "personalisationRulesBySegment": {
     "A": [
-      "scenario-1-block",
-      "scenario-2-block",
-      "scenario-3-block",
-      "scenario-4-block",
-      "scenario-5-block",
-      "scenario-6-block",
-      "scenario-7-block",
-      "scenario-8-block"
+      { "pageUrls": ["/scenario-9"], "componentName": "Sample Component V2", "componentReplacementName": "Sample Component V2 Replaced with new component" },
+      { "pageUrls": ["/scenario-9"], "componentName": "Sample Component V3", "componentReplacementName": "Sample Component V3 Replaced with new component" },
+      { "pageUrls": ["/dashboard"], "componentName": "DashboardHeroBanner", "componentReplacementName": "DashboardHeroBanner-Premium" },
+      { "pageUrls": ["/checkout"], "componentName": "OrderSummaryPanel", "componentReplacementName": "OrderSummaryPanel-Express" },
+      { "pageUrls": ["/account"], "componentName": "AccountSidebar", "componentReplacementName": "AccountSidebar-Pro" }
     ],
     "B": [
-      "scenario-1-block",
-      "scenario-2-block",
-      "scenario-5-block",
-      "scenario-7-block",
-      "scenario-8-block"
+      { "pageUrls": ["/scenario-9"], "componentName": "Sample Component V2", "componentReplacementName": "Sample Component V2 Replaced with new component" },
+      { "pageUrls": ["/dashboard"], "componentName": "DashboardHeroBanner", "componentReplacementName": "DashboardHeroBanner-Standard" },
+      { "pageUrls": ["/checkout"], "componentName": "OrderSummaryPanel", "componentReplacementName": "OrderSummaryPanel-Compact" },
+      { "pageUrls": ["/account"], "componentName": "AccountSidebar", "componentReplacementName": "AccountSidebar-Default" }
     ]
   }
 }

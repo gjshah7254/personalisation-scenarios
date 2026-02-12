@@ -1,36 +1,35 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { User } from "@/lib/types";
+import type { User, Segment } from "@/lib/types";
 
 interface UserSwitcherProps {
   users: User[];
+  userSegments: Record<string, Segment>;
 }
 
-export function UserSwitcher({ users }: UserSwitcherProps) {
-  const router = useRouter();
+export function UserSwitcher({ users, userSegments }: UserSwitcherProps) {
   const [open, setOpen] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     fetch("/api/me")
       .then((r) => r.json())
-      .then((data: { user: User | null }) => setCurrentUserId(data.user?.id));
+      .then((data: { user: User | null }) => setCurrentUserEmail(data.user?.email));
   }, []);
 
-  async function switchUser(userId: string) {
-    await fetch("/api/set-user", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
+  async function switchUser(email: string) {
+    await fetch(`/api/set-user?email=${encodeURIComponent(email)}`, {
+      method: "GET",
+      credentials: "include",
     });
     setOpen(false);
-    setCurrentUserId(userId);
-    router.refresh();
+    setCurrentUserEmail(email);
+    // Full reload so middleware runs with new cookies (e.g. Scenario 9 session + component params)
+    window.location.reload();
   }
 
-  const current = users.find((u) => u.id === currentUserId);
+  const current = users.find((u) => u.email === currentUserEmail);
 
   return (
     <div className="relative">
@@ -59,20 +58,29 @@ export function UserSwitcher({ users }: UserSwitcherProps) {
             role="listbox"
           >
             {users.map((user) => (
-              <li key={user.id} role="option" aria-selected={currentUserId === user.id}>
+              <li key={user.email} role="option" aria-selected={currentUserEmail === user.email}>
                 <button
                   type="button"
-                  onClick={() => switchUser(user.id)}
+                  onClick={() => switchUser(user.email)}
                   className={`flex w-full flex-col gap-0.5 px-3 py-2 text-left text-sm hover:bg-zinc-800 ${
-                    currentUserId === user.id ? "bg-indigo-900/40 text-indigo-200" : "text-zinc-200"
+                    currentUserEmail === user.email ? "bg-indigo-900/40 text-indigo-200" : "text-zinc-200"
                   }`}
                 >
                   <span className="font-medium">{user.name}</span>
                   <span className="text-xs text-zinc-400">{user.email}</span>
-                  <span className="text-xs text-zinc-500">Segment {user.segment}</span>
+                  <span className="text-xs text-zinc-500">Segment {userSegments[user.email] ?? "—"}</span>
                 </button>
               </li>
             ))}
+            <li className="border-t border-zinc-700">
+              <a
+                href="/api/clear-session"
+                className="flex w-full px-3 py-2 text-left text-sm text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+                target="_self"
+              >
+                Clear cookies & start new session
+              </a>
+            </li>
           </ul>
         </>
       )}

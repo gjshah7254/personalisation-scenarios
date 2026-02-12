@@ -27,7 +27,7 @@ export function PersonalisedBlock({
     );
   }
 
-  const seg = segment ?? user.segment;
+  const seg = segment;
   if (seg === "A") {
     return (
       <div className="mt-3 rounded-lg bg-indigo-500/10 p-4 text-indigo-200">

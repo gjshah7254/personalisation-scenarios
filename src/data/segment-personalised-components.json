@@ -1,0 +1,19 @@
+{
+  "A": [
+    "scenario-1-block",
+    "scenario-2-block",
+    "scenario-3-block",
+    "scenario-4-block",
+    "scenario-5-block",
+    "scenario-6-block",
+    "scenario-7-block",
+    "scenario-8-block"
+  ],
+  "B": [
+    "scenario-1-block",
+    "scenario-2-block",
+    "scenario-5-block",
+    "scenario-7-block",
+    "scenario-8-block"
+  ]
+}

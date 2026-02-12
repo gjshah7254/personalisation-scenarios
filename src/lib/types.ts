@@ -1,10 +1,9 @@
 export type Segment = "A" | "B";
 
+/** User profile (email is the unique identifier; segment comes from Salesforce only). */
 export interface User {
-  id: string;
   email: string;
   name: string;
-  segment: Segment;
 }
 
 /** Component IDs that can be personalised (used by Salesforce to drive which blocks to personalise). */
@@ -21,16 +20,30 @@ export const PERSONALISED_COMPONENT_IDS = [
 
 export type PersonalisedComponentId = (typeof PERSONALISED_COMPONENT_IDS)[number];
 
+/** Rule for middleware: which pages get which component replacement (Scenario 9). */
+export interface PersonalisationRule {
+  pageUrls: string[];
+  componentName: string;
+  componentReplacementName: string;
+}
+
+/** Session payload stored in cookie for Scenario 9 (middleware reads this). */
+export interface PersonalisationSession {
+  segment: Segment;
+  personalisationRules: PersonalisationRule[];
+}
+
 /** User context as returned by Salesforce (mock or real). Source of truth for segment and which components to personalise. */
 export interface SalesforceUserContext {
-  userId: string;
+  userEmail: string;
   segment: Segment;
   personalisedComponentIds: PersonalisedComponentId[];
+  /** Per-page component replacement rules for middleware (Scenario 9). */
+  personalisationRules?: PersonalisationRule[];
   /** User profile from Salesforce (or mock). */
   user: {
-    id: string;
-    name: string;
     email: string;
+    name: string;
     segment: Segment;
   };
 }

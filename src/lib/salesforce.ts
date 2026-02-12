@@ -1,71 +1,93 @@
 import { unstable_cache } from "next/cache";
-import { getUserById } from "@/lib/users";
+import { getUserByEmail } from "@/lib/users";
 import type {
   SalesforceUserContext,
   PersonalisedComponentId,
+  PersonalisationRule,
 } from "@/lib/types";
 import type { Segment } from "@/lib/types";
 import { getMockApiBaseUrl } from "@/lib/mock-api-base-url";
 import salesforceMockFallback from "@/data/salesforce-mock.json";
+import segmentPersonalisedComponentsFallback from "@/data/segment-personalised-components.json";
 
-const segmentComponentsFallback = salesforceMockFallback.segmentPersonalisedComponents as Record<
-  Segment,
-  string[]
->;
+type SalesforceMock = {
+  userSegments?: Record<string, Segment>;
+  personalisationRulesBySegment?: Record<Segment, PersonalisationRule[]>;
+};
+
+const fallbackMock = salesforceMockFallback as SalesforceMock;
+const fallbackPersonalised = segmentPersonalisedComponentsFallback as Record<Segment, string[]>;
+
+type PerUserSegmentConfig = {
+  segment: Segment;
+  personalisedComponentIds: string[];
+  personalisationRules: PersonalisationRule[];
+};
 
 /**
- * Fetches segment → personalised component IDs from the mock Salesforce segment-config API
- * (or falls back to salesforce-mock.json when API is unavailable, e.g. at build time).
+ * Fetches segment config for a single user (by email) from the mock Salesforce API (per-user).
+ * API returns only segment + personalisationRules; personalisedComponentIds are merged from segment-personalised-components (for other scenarios).
  */
-async function getSegmentPersonalisedComponents(): Promise<Record<Segment, string[]>> {
+async function getSegmentConfigForUser(email: string): Promise<PerUserSegmentConfig | null> {
   try {
     const base = getMockApiBaseUrl();
-    const res = await fetch(`${base}/api/mock/salesforce/segment-config`, {
+    const res = await fetch(`${base}/api/mock/salesforce/segment-config?email=${encodeURIComponent(email)}`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) throw new Error("Segment config API not ok");
-    const data = (await res.json()) as { segmentPersonalisedComponents: Record<Segment, string[]> };
-    return data.segmentPersonalisedComponents;
+    if (!res.ok) return null;
+    const data = (await res.json()) as { segment: Segment; personalisationRules: PersonalisationRule[] };
+    const { segment, personalisationRules } = data;
+    return {
+      segment,
+      personalisedComponentIds: fallbackPersonalised[segment] ?? [],
+      personalisationRules,
+    };
   } catch {
-    return segmentComponentsFallback;
+    const segment = fallbackMock.userSegments?.[email];
+    if (segment === undefined) return null;
+    return {
+      segment,
+      personalisedComponentIds: fallbackPersonalised[segment] ?? [],
+      personalisationRules: fallbackMock.personalisationRulesBySegment?.[segment] ?? [],
+    };
   }
 }
 
 /**
  * Mock Salesforce API: returns user context (segment, which components to personalise).
- * Fetches user from mock users API and segment config from mock Salesforce segment-config API;
- * falls back to JSON when APIs are unavailable.
+ * Email is the unique identifier.
  */
 export async function getSalesforceUserContext(
-  userId: string
+  email: string
 ): Promise<SalesforceUserContext | null> {
-  const user = await getUserById(userId);
+  const user = await getUserByEmail(email);
   if (!user) return null;
 
-  const segment = user.segment;
-  const segmentComponents = await getSegmentPersonalisedComponents();
-  const personalisedComponentIds = (segmentComponents[segment] ?? []) as PersonalisedComponentId[];
+  const config = await getSegmentConfigForUser(email);
+  if (!config) return null;
+
+  const { segment, personalisedComponentIds, personalisationRules } = config;
 
   return {
-    userId: user.id,
+    userEmail: user.email,
     segment,
-    personalisedComponentIds,
+    personalisedComponentIds: personalisedComponentIds as PersonalisedComponentId[],
+    personalisationRules,
     user: {
-      id: user.id,
-      name: user.name,
       email: user.email,
-      segment: user.segment,
+      name: user.name,
+      segment,
     },
   };
 }
 
-/** Cached version for scenario 8 (unstable_cache by userId). */
+/** Cached version for scenario 8 (unstable_cache by email). */
 export async function getSalesforceUserContextCached(
-  userId: string
+  email: string
 ): Promise<SalesforceUserContext | null> {
   return unstable_cache(
-    async () => getSalesforceUserContext(userId),
-    ["salesforce-user-context", userId],
+    async () => getSalesforceUserContext(email),
+    ["salesforce-user-context", email],
     { revalidate: 60 }
   )();
 }

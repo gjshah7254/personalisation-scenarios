@@ -57,6 +57,13 @@ const scenarios = [
     description:
       "RSC reads userId, fetches content via unstable_cache(userId). Data cached per user; 1 serverless inv per view.",
   },
+  {
+    href: "/scenario-9",
+    title: "Scenario 9",
+    subtitle: "Session + middleware (page/component rules)",
+    description:
+      "Set user → mock API returns user context (segment + which pages/components to personalise). Stored in session cookie. Middleware adds component query params; CDN caches per URL.",
+  },
 ];
 
 export default function HomePage() {

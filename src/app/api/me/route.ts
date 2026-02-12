@@ -1,11 +1,11 @@
-import { getUserIdFromCookie } from "@/lib/cookies";
-import { getUserById } from "@/lib/users";
+import { getCurrentUserEmail } from "@/lib/cookies";
+import { getSalesforceUserContext } from "@/lib/salesforce";
 
 export async function GET() {
-  const userId = await getUserIdFromCookie();
-  if (!userId) {
+  const email = await getCurrentUserEmail();
+  if (!email) {
     return Response.json({ user: null });
   }
-  const user = await getUserById(userId);
-  return Response.json({ user: user ?? null });
+  const context = await getSalesforceUserContext(email);
+  return Response.json({ user: context?.user ?? null });
 }

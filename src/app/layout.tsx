@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { getUsers } from "@/lib/users";
+import { getUsers, getEmailToSegmentMap } from "@/lib/users";
 import { UserSwitcher } from "@/app/components/UserSwitcher";
 import { MobileNavLink } from "@/app/components/MobileNavLink";
 import Link from "next/link";
@@ -16,6 +16,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const users = await getUsers();
+  const userSegments = getEmailToSegmentMap();
 
   return (
     <html lang="en">
@@ -28,7 +29,7 @@ export default async function RootLayout({
               </Link>
               <MobileNavLink />
             </div>
-            <UserSwitcher users={users} />
+            <UserSwitcher users={users} userSegments={userSegments} />
           </div>
         </header>
         <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>

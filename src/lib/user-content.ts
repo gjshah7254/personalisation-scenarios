@@ -1,22 +1,20 @@
 import { unstable_cache } from "next/cache";
-import { getUserById } from "@/lib/users";
+import { getSalesforceUserContext } from "@/lib/salesforce";
 
 export interface UserContentResult {
-  user: { id: string; name: string; email: string; segment: string };
+  user: { email: string; name: string; segment: string };
 }
 
-async function fetchUserContent(userId: string): Promise<UserContentResult | null> {
-  const user = await getUserById(userId);
-  if (!user) return null;
-  return {
-    user: { id: user.id, name: user.name, email: user.email, segment: user.segment },
-  };
+async function fetchUserContent(email: string): Promise<UserContentResult | null> {
+  const context = await getSalesforceUserContext(email);
+  if (!context) return null;
+  return { user: context.user };
 }
 
-export async function getUserContentCached(userId: string): Promise<UserContentResult | null> {
+export async function getUserContentCached(email: string): Promise<UserContentResult | null> {
   return unstable_cache(
-    async () => fetchUserContent(userId),
-    ["user-content", userId],
+    async () => fetchUserContent(email),
+    ["user-content", email],
     { revalidate: 60 }
   )();
 }

@@ -1,20 +1,20 @@
-import { getUserIdFromCookie } from "@/lib/cookies";
-import { getUserById } from "@/lib/users";
+import { getCurrentUserEmail } from "@/lib/cookies";
+import { getSalesforceUserContext } from "@/lib/salesforce";
 
 export async function GET() {
-  const userId = await getUserIdFromCookie();
-  if (!userId) {
+  const email = await getCurrentUserEmail();
+  if (!email) {
     const res = Response.json({ user: null, greeting: null });
     return res;
   }
-  const user = await getUserById(userId);
-  if (!user) {
+  const context = await getSalesforceUserContext(email);
+  if (!context) {
     const res = Response.json({ user: null, greeting: null });
     return res;
   }
   const data = {
-    user: { id: user.id, name: user.name, email: user.email, segment: user.segment },
-    greeting: `Hello ${user.name}`,
+    user: context.user,
+    greeting: `Hello ${context.user.name}`,
   };
   const res = Response.json(data);
   res.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");

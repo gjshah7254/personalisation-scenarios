@@ -49,7 +49,7 @@ export default function Scenario5Page() {
         steps={[
           "Request hits the server. No middleware is used for personalisation on this route.",
           "The page shell (including static content and the Suspense fallback) streams to the client first so the user sees content immediately.",
-          "Meanwhile, the server resolves the async personalised block: reads userId from cookies, fetches user context from Salesforce (mock: segment, personalised component IDs).",
+          "Meanwhile, the server resolves the async personalised block: reads user email from cookies, fetches user context from Salesforce (mock: segment, personalised component IDs).",
           "If this component is in personalisedComponentIds, the server chooses the variant from Salesforce segment and streams the block as the next RSC chunk, replacing the Suspense fallback.",
           "User sees static shell first, then personalised content when ready—reducing perceived latency while still personalising server-side from Salesforce.",
           "RSC streaming allows partial personalisation without blocking the whole page on server work.",

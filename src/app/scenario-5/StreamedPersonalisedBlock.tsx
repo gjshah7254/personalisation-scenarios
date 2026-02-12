@@ -1,4 +1,4 @@
-import { getUserIdFromCookie } from "@/lib/cookies";
+import { getCurrentUserEmail } from "@/lib/cookies";
 import { getSalesforceUserContext } from "@/lib/salesforce";
 
 const COMPONENT_ID = "scenario-5-block" as const;
@@ -10,8 +10,8 @@ async function delay(ms: number) {
 
 export async function StreamedPersonalisedBlock() {
   await delay(800);
-  const userId = await getUserIdFromCookie();
-  const sfContext = userId ? await getSalesforceUserContext(userId) : null;
+  const email = await getCurrentUserEmail();
+  const sfContext = email ? await getSalesforceUserContext(email) : null;
   const shouldPersonalise = sfContext?.personalisedComponentIds.includes(COMPONENT_ID) ?? false;
 
   if (!sfContext) {
