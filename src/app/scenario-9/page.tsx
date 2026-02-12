@@ -120,22 +120,18 @@ export default async function Scenario9Page({ searchParams }: PageProps) {
         secondRequestFromCacheNote="same user + same page = same query params = CDN cache hit"
         steps={[
           <>
-            Set user session: use Login to pick a user. The client calls GET{" "}
+            Set user session: use Login to pick a user. The client calls {" "}
             <a href={`${baseUrl}/api/set-user?email=alice%40enterprise.com`} target="_blank" rel="noopener noreferrer">
               {baseUrl}/api/set-user?email=alice@enterprise.com
-            </a>{" "}
-            (email in query string). (Use your deployment domain, e.g. https://your-app.vercel.app, in production.)
+            </a>
           </>,
           <>
-            Server handling set-user fetches user context by calling GET{" "}
-            <a href={`${baseUrl}/api/mock/users/by-email?email=alice%40enterprise.com`} target="_blank" rel="noopener noreferrer">
-              {baseUrl}/api/mock/users/by-email?email=...
-            </a>{" "}
-            and GET{" "}
+            Server handling set-user fetches user context by calling above API 
+            and Salesforce Mock API GET{" "}
             <a href={`${baseUrl}/api/mock/salesforce/segment-config?email=alice%40enterprise.com`} target="_blank" rel="noopener noreferrer">
               {baseUrl}/api/mock/salesforce/segment-config?email=alice@enterprise.com
             </a>{" "}
-            (mock Salesforce, personalised per user — returns only that user&apos;s segment and rules). It builds segment + personalisationRules and returns Set-Cookie for personalisation-session.
+            (personalised per user — returns only that user&apos;s segment and rules). It builds segment + personalisationRules and returns Set-Cookie for personalisation-session.
           </>,
           <>
             Session started: the response from both APIs (user API and Salesforce API) are stored in the personalisation-session cookie.
@@ -144,8 +140,7 @@ export default async function Scenario9Page({ searchParams }: PageProps) {
             You navigate to the scenario-9 page: browser requests GET{" "}
             <a href={`${baseUrl}/scenario-9`} target="_blank" rel="noopener noreferrer">
               {baseUrl}/scenario-9
-            </a>{" "}
-            (or your deployment URL). Middleware runs, reads the session cookie.
+            </a>{" "}. Middleware runs, reads the session cookie.
           </>,
           "Middleware finds rules whose pageUrls match /scenario-9 and adds query params: ?component=... (and more if multiple rules match).",
           <>
