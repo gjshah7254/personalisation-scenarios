@@ -34,7 +34,7 @@ export async function SegmentDataBlock({ segment, shouldPersonalise = true }: Se
   if (!segment) {
     return (
       <p className="mt-3 text-zinc-400">
-        No segment. Use &quot;View as&quot; in the header to pick a user (Segment A or B).
+        No segment. Use &quot;Login&quot; in the header to pick a user (Segment A or B).
       </p>
     );
   }

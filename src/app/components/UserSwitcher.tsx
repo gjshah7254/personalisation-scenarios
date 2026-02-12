@@ -40,7 +40,7 @@ export function UserSwitcher({ users, userSegments }: UserSwitcherProps) {
         aria-expanded={open}
         aria-haspopup="listbox"
       >
-        <span className="text-zinc-400">View as:</span>
+        <span className="text-zinc-400">Login:</span>
         <span className="text-indigo-300">
           {current ? `${current.name} (${current.email})` : "No user"}
         </span>

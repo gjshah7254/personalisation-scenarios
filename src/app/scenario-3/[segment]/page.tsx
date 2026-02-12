@@ -27,7 +27,7 @@ export default async function Scenario3SegmentPage({ params }: PageProps) {
           Scenario 3: Whole page at middleware by segment
         </h1>
         <p className="mt-1 text-zinc-400">
-          Segment comes from Salesforce (set when you use &quot;View as&quot;). Middleware reads the
+          Segment comes from Salesforce (set when you use &quot;Login&quot;). Middleware reads the
           segment cookie and rewrites to this segment-specific page. Pre-generated at build, CDN-cached per segment.
         </p>
       </div>
@@ -50,7 +50,7 @@ export default async function Scenario3SegmentPage({ params }: PageProps) {
         secondRequestFromCacheNote="same segment gets same static page from CDN cache"
         steps={[
           "Request hits Vercel edge; middleware runs before the page.",
-          "Segment is sourced from Salesforce when the user is set (View as); the segment cookie is kept in sync with Salesforce.",
+          "Segment is sourced from Salesforce when the user is set (Login); the segment cookie is kept in sync with Salesforce.",
           "Middleware reads the segment from cookies (e.g. personalisation-segment). Defaults to A if missing.",
           "Middleware rewrites the URL: /scenario-3 → /scenario-3/A or /scenario-3/B (internal rewrite; browser URL stays /scenario-3).",
           "Next.js serves the matching static page from generateStaticParams (pre-built at build time for A and B).",

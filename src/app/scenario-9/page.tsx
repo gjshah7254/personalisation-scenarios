@@ -73,7 +73,7 @@ export default async function Scenario9Page({ searchParams }: PageProps) {
           Session & middleware-added params
         </h2>
         <p className="mt-3 text-sm text-zinc-300">
-          Use <strong className="text-zinc-200">View as</strong> in the header to pick a user. That
+          Use <strong className="text-zinc-200">Login</strong> in the header to pick a user. That
           calls the mock API, gets user context (including personalisation rules for /scenario-9),
           and stores it in the session cookie. When you visit /scenario-9, middleware adds the
           component query params.
@@ -102,7 +102,7 @@ export default async function Scenario9Page({ searchParams }: PageProps) {
           </>
         ) : (
           <p className="mt-4 text-zinc-500">
-            No component params yet. Use View as to set a user session, then revisit /scenario-9.
+            No component params yet. Use Login to set a user session, then revisit /scenario-9.
           </p>
         )}
         <p className="mt-3 text-xs text-zinc-500">
@@ -120,7 +120,7 @@ export default async function Scenario9Page({ searchParams }: PageProps) {
         secondRequestFromCacheNote="same user + same page = same query params = CDN cache hit"
         steps={[
           <>
-            Set user session: use View as to pick a user. The client calls GET{" "}
+            Set user session: use Login to pick a user. The client calls GET{" "}
             <a href={`${baseUrl}/api/set-user?email=alice%40enterprise.com`} target="_blank" rel="noopener noreferrer">
               {baseUrl}/api/set-user?email=alice@enterprise.com
             </a>{" "}
@@ -138,11 +138,7 @@ export default async function Scenario9Page({ searchParams }: PageProps) {
             (mock Salesforce, personalised per user — returns only that user&apos;s segment and rules). It builds segment + personalisationRules and returns Set-Cookie for personalisation-session.
           </>,
           <>
-            Session started: the response from{" "}
-            <a href={`${baseUrl}/api/set-user?email=alice%40enterprise.com`} target="_blank" rel="noopener noreferrer">
-              {baseUrl}/api/set-user?email=...
-            </a>{" "}
-            stores segment and personalisationRules in the personalisation-session cookie. Mock rules come from salesforce-mock.json (e.g. Sample Component V2-Sample Component V2 Replaced with new component for segment B).
+            Session started: the response from both APIs (user API and Salesforce API) are stored in the personalisation-session cookie.
           </>,
           <>
             You navigate to the scenario-9 page: browser requests GET{" "}

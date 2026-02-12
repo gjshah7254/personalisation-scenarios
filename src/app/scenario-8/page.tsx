@@ -35,7 +35,7 @@ export default async function Scenario8Page() {
         </h2>
         {!sfContext ? (
           <p className="mt-3 text-zinc-400">
-            No user selected. Use &quot;View as&quot; in the header to pick a user.
+            No user selected. Use &quot;Login&quot; in the header to pick a user.
           </p>
         ) : !shouldPersonalise ? (
           <p className="mt-3 text-zinc-500">

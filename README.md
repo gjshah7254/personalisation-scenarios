@@ -13,7 +13,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## How to use
 
-1. Use **View as** in the header to switch between users (Segment A or B).
+1. Use **Login** in the header to switch between users (Segment A or B).
 2. Visit each scenario page and switch users to see how content changes.
 
 Mock users and segments are defined in `src/data/users.json`.

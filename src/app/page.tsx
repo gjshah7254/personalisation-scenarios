@@ -74,7 +74,7 @@ export default function HomePage() {
           Next.js & Vercel personalisation
         </h1>
         <p className="mt-2 text-zinc-400">
-          Use the <strong className="text-zinc-300">View as</strong> control in the header to switch
+          Use the <strong className="text-zinc-300">Login</strong> control in the header to switch
           between users (Segment A or B) and see how content changes per scenario.
         </p>
       </div>

@@ -17,7 +17,7 @@ export async function StreamedPersonalisedBlock() {
   if (!sfContext) {
     return (
       <p className="mt-3 text-zinc-400">
-        No user selected. Use &quot;View as&quot; in the header to pick a user.
+        No user selected. Use &quot;Login&quot; in the header to pick a user.
       </p>
     );
   }

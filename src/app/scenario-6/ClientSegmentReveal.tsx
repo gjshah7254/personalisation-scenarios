@@ -32,7 +32,7 @@ export function ClientSegmentReveal({
 
   if (!context) {
     return (
-      <>{fallback ?? <p className="mt-3 text-zinc-400">No user. Use &quot;View as&quot; in the header to pick a user.</p>}</>
+      <>{fallback ?? <p className="mt-3 text-zinc-400">No user. Use &quot;Login&quot; in the header to pick a user.</p>}</>
     );
   }
 
