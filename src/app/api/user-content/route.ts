@@ -7,7 +7,7 @@ export async function GET() {
     const res = Response.json({ user: null, greeting: null });
     return res;
   }
-  const user = getUserById(userId);
+  const user = await getUserById(userId);
   if (!user) {
     const res = Response.json({ user: null, greeting: null });
     return res;

@@ -6,6 +6,6 @@ export async function GET() {
   if (!userId) {
     return Response.json({ user: null });
   }
-  const user = getUserById(userId);
+  const user = await getUserById(userId);
   return Response.json({ user: user ?? null });
 }

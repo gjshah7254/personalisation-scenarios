@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   description: "Demo of 5 personalisation patterns with Next.js and Vercel",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const users = getUsers();
+  const users = await getUsers();
 
   return (
     <html lang="en">

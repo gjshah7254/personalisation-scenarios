@@ -6,7 +6,7 @@ export interface UserContentResult {
 }
 
 async function fetchUserContent(userId: string): Promise<UserContentResult | null> {
-  const user = getUserById(userId);
+  const user = await getUserById(userId);
   if (!user) return null;
   return {
     user: { id: user.id, name: user.name, email: user.email, segment: user.segment },
