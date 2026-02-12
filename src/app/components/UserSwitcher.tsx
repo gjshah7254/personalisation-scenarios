@@ -18,15 +18,11 @@ export function UserSwitcher({ users, userSegments }: UserSwitcherProps) {
       .then((data: { user: User | null }) => setCurrentUserEmail(data.user?.email));
   }, []);
 
-  async function switchUser(email: string) {
-    await fetch(`/api/set-user?email=${encodeURIComponent(email)}`, {
-      method: "GET",
-      credentials: "include",
-    });
+  function switchUser(email: string) {
     setOpen(false);
-    setCurrentUserEmail(email);
-    // Full reload so middleware runs with new cookies (e.g. Scenario 9 session + component params)
-    window.location.reload();
+    // Full page navigation: set-user redirects with Set-Cookie, so cookies persist reliably (e.g. on Vercel)
+    const redirect = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/";
+    window.location.href = `/api/set-user?email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirect)}`;
   }
 
   const current = users.find((u) => u.email === currentUserEmail);

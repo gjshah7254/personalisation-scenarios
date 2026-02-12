@@ -4,21 +4,31 @@ import { getSalesforceUserContext } from "@/lib/salesforce";
 import { USER_EMAIL_COOKIE, SEGMENT_COOKIE, SESSION_COOKIE } from "@/lib/cookie-names";
 
 export async function GET(request: Request) {
-  const email = new URL(request.url).searchParams.get("email");
+  const url = new URL(request.url);
+  const email = url.searchParams.get("email");
+  const redirectTo = url.searchParams.get("redirect") ?? "/";
+
+  // Redirect to same-origin path so cookies are set on the redirect response — reliable on Vercel
+  const origin = url.origin;
+  const safePath = redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/";
+  const redirectUrl = new URL(safePath, origin);
+
   if (!email) {
-    return NextResponse.json({ error: "email required (query param: ?email=...)" }, { status: 400 });
+    redirectUrl.searchParams.set("error", "email-required");
+    return NextResponse.redirect(redirectUrl, 302);
   }
   const user = await getUserByEmail(email);
   if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    redirectUrl.searchParams.set("error", "user-not-found");
+    return NextResponse.redirect(redirectUrl, 302);
   }
   // Call mock Salesforce and get user context (segment + personalisation rules for Scenario 9).
   const sfContext = await getSalesforceUserContext(email);
   const segment = sfContext?.segment ?? "A";
   const personalisationRules = sfContext?.personalisationRules ?? [];
 
-  const res = NextResponse.json({ ok: true });
-  const isSecure = new URL(request.url).protocol === "https:";
+  const res = NextResponse.redirect(redirectUrl, 302);
+  const isSecure = url.protocol === "https:";
   const cookieOpts = {
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
@@ -29,7 +39,6 @@ export async function GET(request: Request) {
   res.cookies.set(USER_EMAIL_COOKIE, user.email, cookieOpts);
   res.cookies.set(SEGMENT_COOKIE, segment, cookieOpts);
   // Scenario 9: store session (segment + page/component rules) for middleware.
-  // Encode so cookie value has no commas/semicolons/spaces (invalid in Set-Cookie); avoids truncation on Vercel/CDNs.
   const sessionPayload = encodeURIComponent(JSON.stringify({ segment, personalisationRules }));
   res.cookies.set(SESSION_COOKIE, sessionPayload, cookieOpts);
   return res;
