@@ -18,7 +18,14 @@ export async function GET(request: Request) {
   const personalisationRules = sfContext?.personalisationRules ?? [];
 
   const res = NextResponse.json({ ok: true });
-  const cookieOpts = { path: "/", maxAge: 60 * 60 * 24 * 7, httpOnly: false };
+  const isSecure = new URL(request.url).protocol === "https:";
+  const cookieOpts = {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+    httpOnly: false,
+    secure: isSecure,
+    sameSite: "lax" as const,
+  };
   res.cookies.set(USER_EMAIL_COOKIE, user.email, cookieOpts);
   res.cookies.set(SEGMENT_COOKIE, segment, cookieOpts);
   // Scenario 9: store session (segment + page/component rules) for middleware

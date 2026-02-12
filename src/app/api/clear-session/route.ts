@@ -8,7 +8,12 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const homeUrl = new URL("/", url.origin);
   const res = NextResponse.redirect(homeUrl, 302);
-  const opts = { path: "/", maxAge: 0 };
+  const opts = {
+    path: "/",
+    maxAge: 0,
+    secure: url.protocol === "https:",
+    sameSite: "lax" as const,
+  };
   res.cookies.set(USER_EMAIL_COOKIE, "", opts);
   res.cookies.set(SEGMENT_COOKIE, "", opts);
   res.cookies.set(SESSION_COOKIE, "", opts);

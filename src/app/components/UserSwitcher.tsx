@@ -13,7 +13,7 @@ export function UserSwitcher({ users, userSegments }: UserSwitcherProps) {
   const [currentUserEmail, setCurrentUserEmail] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    fetch("/api/me")
+    fetch("/api/me", { credentials: "include" })
       .then((r) => r.json())
       .then((data: { user: User | null }) => setCurrentUserEmail(data.user?.email));
   }, []);
