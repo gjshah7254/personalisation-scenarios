@@ -28,11 +28,9 @@ export async function GET(request: Request) {
   };
   res.cookies.set(USER_EMAIL_COOKIE, user.email, cookieOpts);
   res.cookies.set(SEGMENT_COOKIE, segment, cookieOpts);
-  // Scenario 9: store session (segment + page/component rules) for middleware
-  res.cookies.set(
-    SESSION_COOKIE,
-    JSON.stringify({ segment, personalisationRules }),
-    cookieOpts
-  );
+  // Scenario 9: store session (segment + page/component rules) for middleware.
+  // Encode so cookie value has no commas/semicolons/spaces (invalid in Set-Cookie); avoids truncation on Vercel/CDNs.
+  const sessionPayload = encodeURIComponent(JSON.stringify({ segment, personalisationRules }));
+  res.cookies.set(SESSION_COOKIE, sessionPayload, cookieOpts);
   return res;
 }

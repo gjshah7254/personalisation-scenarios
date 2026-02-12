@@ -21,7 +21,12 @@ export function middleware(request: NextRequest) {
     if (!sessionCookie) return NextResponse.next();
     let session: PersonalisationSession;
     try {
-      session = JSON.parse(sessionCookie) as PersonalisationSession;
+      // New format: encoded. Old format: raw JSON (backward compat).
+      try {
+        session = JSON.parse(decodeURIComponent(sessionCookie)) as PersonalisationSession;
+      } catch {
+        session = JSON.parse(sessionCookie) as PersonalisationSession;
+      }
     } catch {
       return NextResponse.next();
     }

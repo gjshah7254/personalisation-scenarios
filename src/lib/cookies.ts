@@ -26,7 +26,12 @@ export async function getSessionFromCookie(): Promise<PersonalisationSession | n
   const value = store.get(SESSION_COOKIE)?.value;
   if (!value) return null;
   try {
-    return JSON.parse(value) as PersonalisationSession;
+    // New format: encoded (no commas/semicolons). Old format: raw JSON (backward compat).
+    try {
+      return JSON.parse(decodeURIComponent(value)) as PersonalisationSession;
+    } catch {
+      return JSON.parse(value) as PersonalisationSession;
+    }
   } catch {
     return null;
   }
