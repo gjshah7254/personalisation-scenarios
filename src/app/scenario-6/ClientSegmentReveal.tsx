@@ -1,39 +1,51 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const SEGMENT_COOKIE = "personalisation-segment";
-
-function getSegmentFromCookie(): "A" | "B" | null {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie.match(new RegExp(`(?:^|; )${SEGMENT_COOKIE}=([^;]*)`));
-  const value = match ? decodeURIComponent(match[1]).trim() : null;
-  if (value === "A" || value === "B") return value;
-  return null;
-}
+import type { PersonalisedComponentId, SalesforceUserContext } from "@/lib/types";
 
 interface ClientSegmentRevealProps {
+  componentId?: PersonalisedComponentId;
   segmentA: React.ReactNode;
   segmentB: React.ReactNode;
   fallback?: React.ReactNode;
 }
 
-export function ClientSegmentReveal({ segmentA, segmentB, fallback }: ClientSegmentRevealProps) {
-  const [segment, setSegment] = useState<"A" | "B" | null>(null);
-  const [mounted, setMounted] = useState(false);
+export function ClientSegmentReveal({
+  componentId = "scenario-6-block",
+  segmentA,
+  segmentB,
+  fallback,
+}: ClientSegmentRevealProps) {
+  const [context, setContext] = useState<SalesforceUserContext | null | undefined>(undefined);
 
   useEffect(() => {
-    setSegment(getSegmentFromCookie());
-    setMounted(true);
+    fetch("/api/salesforce/user-context")
+      .then((r) => r.json())
+      .then((data: { context: SalesforceUserContext | null }) => {
+        setContext(data.context ?? null);
+      });
   }, []);
 
-  if (!mounted) {
+  if (context === undefined) {
     return <>{fallback ?? <p className="mt-3 text-zinc-500">Loading…</p>}</>;
   }
 
-  if (segment === "A") return <>{segmentA}</>;
-  if (segment === "B") return <>{segmentB}</>;
-  return (
-    <>{fallback ?? <p className="mt-3 text-zinc-400">No segment. Use &quot;View as&quot; in the header to pick a user.</p>}</>
-  );
+  if (!context) {
+    return (
+      <>{fallback ?? <p className="mt-3 text-zinc-400">No user. Use &quot;View as&quot; in the header to pick a user.</p>}</>
+    );
+  }
+
+  const shouldPersonalise = context.personalisedComponentIds.includes(componentId);
+  if (!shouldPersonalise) {
+    return (
+      <p className="mt-3 text-zinc-500">
+        This component is not personalised for your segment (Salesforce context).
+      </p>
+    );
+  }
+
+  if (context.segment === "A") return <>{segmentA}</>;
+  if (context.segment === "B") return <>{segmentB}</>;
+  return <>{fallback ?? <p className="mt-3 text-zinc-400">No segment.</p>}</>;
 }

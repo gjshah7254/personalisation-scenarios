@@ -1,7 +1,9 @@
 import { getUserIdFromCookie } from "@/lib/cookies";
-import { getUserById } from "@/lib/users";
+import { getSalesforceUserContext } from "@/lib/salesforce";
 
-// Simulate a delay (e.g. DB or API call) so streaming is visible
+const COMPONENT_ID = "scenario-5-block" as const;
+
+// Simulate a delay (e.g. DB or Salesforce API call) so streaming is visible
 async function delay(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -9,9 +11,10 @@ async function delay(ms: number) {
 export async function StreamedPersonalisedBlock() {
   await delay(800);
   const userId = await getUserIdFromCookie();
-  const user = userId ? getUserById(userId) : undefined;
+  const sfContext = userId ? await getSalesforceUserContext(userId) : null;
+  const shouldPersonalise = sfContext?.personalisedComponentIds.includes(COMPONENT_ID) ?? false;
 
-  if (!user) {
+  if (!sfContext) {
     return (
       <p className="mt-3 text-zinc-400">
         No user selected. Use &quot;View as&quot; in the header to pick a user.
@@ -19,19 +22,27 @@ export async function StreamedPersonalisedBlock() {
     );
   }
 
-  if (user.segment === "A") {
+  if (!shouldPersonalise) {
+    return (
+      <p className="mt-3 text-zinc-500">
+        This component is not personalised for your segment (Salesforce context).
+      </p>
+    );
+  }
+
+  if (sfContext.segment === "A") {
     return (
       <div className="mt-3 rounded-lg bg-indigo-500/10 p-4 text-indigo-200">
-        <p className="font-medium">Streamed: Segment A</p>
-        <p className="mt-1 text-sm">Hello {user.name}. This block was streamed after the shell.</p>
+        <p className="font-medium">Streamed: Segment A (from Salesforce)</p>
+        <p className="mt-1 text-sm">Hello {sfContext.user.name}. This block was streamed after the shell.</p>
       </div>
     );
   }
 
   return (
     <div className="mt-3 rounded-lg bg-amber-500/10 p-4 text-amber-200">
-      <p className="font-medium">Streamed: Segment B</p>
-      <p className="mt-1 text-sm">Hey {user.name}. This block was streamed after the shell.</p>
+      <p className="font-medium">Streamed: Segment B (from Salesforce)</p>
+      <p className="mt-1 text-sm">Hey {sfContext.user.name}. This block was streamed after the shell.</p>
     </div>
   );
 }

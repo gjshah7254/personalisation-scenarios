@@ -27,8 +27,8 @@ export default async function Scenario3SegmentPage({ params }: PageProps) {
           Scenario 3: Whole page at middleware by segment
         </h1>
         <p className="mt-1 text-zinc-400">
-          Middleware read your segment cookie and rewrote the request to this segment-specific page.
-          This page is pre-generated at build (generateStaticParams) and CDN-cached per segment.
+          Segment comes from Salesforce (set when you use &quot;View as&quot;). Middleware reads the
+          segment cookie and rewrites to this segment-specific page. Pre-generated at build, CDN-cached per segment.
         </p>
       </div>
 
@@ -50,15 +50,16 @@ export default async function Scenario3SegmentPage({ params }: PageProps) {
         secondRequestFromCacheNote="same segment gets same static page from CDN cache"
         steps={[
           "Request hits Vercel edge; middleware runs before the page.",
+          "Segment is sourced from Salesforce when the user is set (View as); the segment cookie is kept in sync with Salesforce.",
           "Middleware reads the segment from cookies (e.g. personalisation-segment). Defaults to A if missing.",
           "Middleware rewrites the URL: /scenario-3 → /scenario-3/A or /scenario-3/B (internal rewrite; browser URL stays /scenario-3).",
           "Next.js serves the matching static page from generateStaticParams (pre-built at build time for A and B).",
           "Response is served from CDN; each segment has its own cached static HTML. No server render at request time.",
           "Whole page is personalised by segment; no per-component logic—the entire page variant is static.",
-          "Second request (same user/segment): Yes — the same segment gets the same pre-built static page from CDN cache. No server or edge run; response is fully cached per segment.",
+          "Second request (same segment): Yes — the same segment gets the same pre-built static page from CDN cache. No server or edge run; response is fully cached per segment.",
         ]}
         vercelUsage={[
-          "Every request: 1 Edge Middleware invocation (reads cookie, rewrites URL; runs at the edge, low cost).",
+          "Every request: 1 Edge Middleware invocation (reads segment cookie—synced from Salesforce; rewrites URL; runs at the edge, low cost).",
           "Page response: served from CDN; no Serverless Function invocation for the page.",
           "Bandwidth: from CDN after first request per segment; origin not hit for cached responses.",
           "Lowest serverless usage: only middleware runs; page is static and CDN-cached.",

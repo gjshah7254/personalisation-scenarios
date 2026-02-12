@@ -14,8 +14,8 @@ export default function Scenario2Page() {
           Scenario 2: Client-side personalised component
         </h1>
         <p className="mt-1 text-zinc-400">
-          This page is static and CDN-cached. The personalised block is a client component that
-          fetches the current user and renders the right variant in the browser.
+          This page is static and CDN-cached. The personalised block fetches user context from
+          Salesforce (mock API) and renders the right variant in the browser.
         </p>
       </div>
 
@@ -39,14 +39,14 @@ export default function Scenario2Page() {
           "Page is pre-rendered at build time (or served from CDN). No middleware runs.",
           "Static HTML is sent to the client; the page shell is identical for all users.",
           "Client-side JS hydrates the page. The personalised block is a Client Component.",
-          "The client component runs in the browser and calls an API (e.g. GET /api/me) to get the current user/segment from cookies.",
-          "Once the API returns, the component re-renders with the correct variant (Segment A or B).",
+          "The client component calls GET /api/salesforce/user-context to get user context (segment, personalised component IDs) from Salesforce (mock).",
+          "If this component is in personalisedComponentIds, the component re-renders with the correct variant (Segment A or B) from Salesforce.",
           "Personalisation happens entirely in the browser after the initial load.",
-          "Second request (same user/segment): Yes for the page HTML — it is served from CDN cache (same static page for everyone). The personalised block is still filled in on the client after hydration; the API may be cached by the browser or CDN.",
+          "Second request (same user): Page HTML from CDN cache. Personalised block is filled client-side again; user-context API may be cached by browser or CDN.",
         ]}
         vercelUsage={[
           "Page HTML/JS/assets: served from CDN (no serverless function for the page).",
-          "Each page load triggers 1 API route invocation (GET /api/me) from the client.",
+          "Each page load triggers 1 API route invocation (GET /api/salesforce/user-context) from the client.",
           "No Edge Middleware invocations.",
           "Lower function usage than Scenario 1: one light API call per view instead of full SSR.",
         ]}

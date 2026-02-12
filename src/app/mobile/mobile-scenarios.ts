@@ -26,10 +26,11 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
       "GET /api/mobile/users/user-2/dashboard",
     ],
     technicalSteps: [
+      "User context (segment, personalised component IDs) is always sourced from Salesforce. Mobile can call GET /api/salesforce/user-context (or equivalent Salesforce API) with userId to get segment and which components to personalise.",
       "Mobile app resolves the current user (e.g. from auth) and has a stable user id.",
       "Every API request includes the user id in the path, e.g. /api/mobile/users/{userId}/dashboard.",
       "Next.js API route reads userId from the path (params or searchParams); do not use cookies() or headers() for identity so the route stays cacheable.",
-      "Route fetches user-specific data and returns JSON with Cache-Control: public, s-maxage=60, stale-while-revalidate=300 (or your chosen TTL).",
+      "Route fetches user-specific data (segment and content can be derived from Salesforce user context) and returns JSON with Cache-Control: public, s-maxage=60, stale-while-revalidate=300 (or your chosen TTL).",
       "Vercel CDN caches the response keyed by the full URL. Each distinct userId in the path gets a separate cache entry.",
       "Second request from the same user (same URL) is served from the CDN (HIT); no serverless invocation.",
     ],
@@ -51,7 +52,8 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
       "GET /api/mobile/segment/B/dashboard",
     ],
     technicalSteps: [
-      "Mobile app knows the user's segment (A or B) from auth or a previous call.",
+      "User context (segment, personalised component IDs) is always sourced from Salesforce. Mobile calls GET /api/salesforce/user-context (or equivalent Salesforce API) with userId to get the user's segment (A or B) and which components to personalise.",
+      "Mobile app uses the segment from Salesforce for subsequent API requests.",
       "API request uses the segment in the path, e.g. /api/mobile/segment/A/dashboard.",
       "Next.js API route reads segment from the path; do not use cookies() so the response is cacheable.",
       "Route returns segment-specific JSON with Cache-Control.",
@@ -76,8 +78,9 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
       "GET /api/mobile/dashboard with header X-User-Id: user-2",
     ],
     technicalSteps: [
+      "User context (segment, personalised component IDs) is always sourced from Salesforce. Mobile can call the user-context API (or Salesforce) with userId to get segment and which components to personalise before or in parallel with this request.",
       "Mobile sends a single URL (e.g. GET /api/mobile/dashboard) with user identity in a header (e.g. X-User-Id: user-1 or Authorization: Bearer <token>).",
-      "API route reads the header, fetches user-specific data, returns JSON.",
+      "API route reads the header, fetches user-specific data (e.g. from Salesforce or cached context), returns JSON.",
       "Response includes Vary: X-User-Id (or the header you use) and Cache-Control: public, s-maxage=60, ...",
       "The CDN is supposed to treat different values of the Vary header as different cache keys. If Vercel does this, each user gets a separate cached response.",
       "Verify on Vercel that the edge cache keys on the Vary header; otherwise all users may get the same cached response (wrong).",

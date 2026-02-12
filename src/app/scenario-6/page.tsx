@@ -39,8 +39,8 @@ export default function Scenario6Page() {
         </h1>
         <p className="mt-1 text-zinc-400">
           This page is fully static (SSG). Both segment variants are in the HTML at build time. A
-          client component reads the segment cookie and shows only the matching variant. No
-          middleware, no serverless, no API call for content.
+          client component fetches user context from Salesforce (mock) and shows the matching variant
+          when this component is marked as personalised for your segment.
         </p>
       </div>
 
@@ -51,6 +51,7 @@ export default function Scenario6Page() {
           Personalised content (embedded variants, client reveals one)
         </h2>
         <ClientSegmentReveal
+          componentId="scenario-6-block"
           segmentA={<EmbeddedVariantA />}
           segmentB={<EmbeddedVariantB />}
         />
@@ -67,15 +68,15 @@ export default function Scenario6Page() {
           "Page is pre-rendered at build time (SSG). No cookies(), headers(), or async data — so it stays static.",
           "Both Segment A and Segment B content are embedded in the same HTML (two blocks in the page).",
           "Static HTML is served from CDN. No middleware runs; no serverless function for the page.",
-          "Client hydrates. A client component (ClientSegmentReveal) reads the personalisation-segment cookie in the browser.",
-          "The component shows only the block matching the segment (A or B); the other is not displayed.",
-          "No API call and no server run for personalisation. Second request (same user/segment): full response from CDN; client again reveals the matching variant from cookie.",
+          "Client hydrates. ClientSegmentReveal calls GET /api/salesforce/user-context to get segment and personalised component IDs from Salesforce (mock).",
+          "If this component is in personalisedComponentIds, the component shows only the block matching the segment (A or B) from Salesforce; the other is not displayed.",
+          "Second request (same user): full response from CDN; client again fetches user context and reveals the matching variant when personalised for this user.",
         ]}
         vercelUsage={[
           "Page HTML/JS/assets: served from CDN only. No serverless function for the page.",
-          "No API route invocations for personalisation (no /api/me or other content API).",
+          "Each page load: 1 API route invocation (GET /api/salesforce/user-context) from the client to resolve segment and whether this component is personalised.",
           "No Edge Middleware invocations.",
-          "Minimal Vercel usage: CDN bandwidth only; zero function or middleware invocations for this route.",
+          "Minimal serverless usage: one light API call per view; CDN serves the page.",
         ]}
       />
     </div>

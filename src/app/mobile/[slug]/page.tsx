@@ -46,6 +46,17 @@ export default async function MobileScenarioDetailPage({ params }: PageProps) {
       </section>
 
       <section className="rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
+        <h2 className="text-lg font-semibold text-white">Salesforce integration</h2>
+        <p className="mt-2 text-sm text-zinc-300">
+          User context (segment, which components to personalise) is always sourced from Salesforce.
+          The app uses a mock API (<code className="rounded bg-zinc-800 px-1">GET /api/salesforce/user-context</code>)
+          until real credentials are available. Mobile clients should resolve the user (e.g. from auth),
+          then call the user-context API (or equivalent Salesforce API) to get segment and personalised
+          component IDs before requesting scenario-specific resources.
+        </p>
+      </section>
+
+      <section className="rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
         <h2 className="text-lg font-semibold text-white">Technical details</h2>
         <ol className="mt-2 list-inside list-decimal space-y-1.5 text-sm text-zinc-300">
           {scenario.technicalSteps.map((step, i) => (

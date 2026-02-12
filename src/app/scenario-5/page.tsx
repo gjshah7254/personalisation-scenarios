@@ -23,9 +23,8 @@ export default function Scenario5Page() {
           Scenario 5: Streaming + partial personalization
         </h1>
         <p className="mt-1 text-zinc-400">
-          The static shell of this page streams first. The personalised section below streams in
-          when the server has finished resolving it (RSC streaming). You may see the placeholder
-          briefly.
+          The static shell streams first. The personalised section uses user context from Salesforce
+          (mock) and streams in when the server has finished resolving it (RSC streaming).
         </p>
       </div>
 
@@ -50,11 +49,11 @@ export default function Scenario5Page() {
         steps={[
           "Request hits the server. No middleware is used for personalisation on this route.",
           "The page shell (including static content and the Suspense fallback) streams to the client first so the user sees content immediately.",
-          "Meanwhile, the server resolves the async personalised block (StreamedPersonalisedBlock): reads cookies, looks up user, chooses variant.",
-          "When the personalised block is ready, it is streamed as the next RSC chunk and replaces the Suspense fallback.",
-          "User sees static shell first, then personalised content when ready—reducing perceived latency while still personalising server-side.",
+          "Meanwhile, the server resolves the async personalised block: reads userId from cookies, fetches user context from Salesforce (mock: segment, personalised component IDs).",
+          "If this component is in personalisedComponentIds, the server chooses the variant from Salesforce segment and streams the block as the next RSC chunk, replacing the Suspense fallback.",
+          "User sees static shell first, then personalised content when ready—reducing perceived latency while still personalising server-side from Salesforce.",
           "RSC streaming allows partial personalisation without blocking the whole page on server work.",
-          "Second request (same user/segment): No — the page and streamed block are rendered on the server again. The response is not CDN-cached. (Next.js data cache could reduce backend calls but would not make the response CDN-cached.)",
+          "Second request (same user): No — the page and streamed block are rendered on the server again. The response is not CDN-cached.",
         ]}
         vercelUsage={[
           "Every page view = 1 Serverless Function invocation (streaming SSR; function may stay open until stream completes).",

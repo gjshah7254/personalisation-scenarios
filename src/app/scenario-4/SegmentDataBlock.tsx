@@ -5,21 +5,30 @@ async function getSegmentData(segment: Segment | undefined) {
   if (!segment) return { title: "No segment", items: [] };
   if (segment === "A") {
     return {
-      title: "Enterprise features",
+      title: "Enterprise features (segment from Salesforce)",
       items: [],
     };
   }
   return {
-    title: "Startup features",
+    title: "Startup features (segment from Salesforce)",
     items: [],
   };
 }
 
 interface SegmentDataBlockProps {
   segment: Segment | undefined;
+  shouldPersonalise?: boolean;
 }
 
-export async function SegmentDataBlock({ segment }: SegmentDataBlockProps) {
+export async function SegmentDataBlock({ segment, shouldPersonalise = true }: SegmentDataBlockProps) {
+  if (!shouldPersonalise) {
+    return (
+      <p className="mt-3 text-zinc-500">
+        This component is not personalised for your segment (Salesforce context).
+      </p>
+    );
+  }
+
   const data = await getSegmentData(segment);
 
   if (!segment) {
