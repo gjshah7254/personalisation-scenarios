@@ -25,18 +25,20 @@ export async function getUsers(): Promise<User[]> {
 
 /**
  * Fetches a single user by email from the mock users API (or falls back to JSON when API is unavailable).
+ * On Vercel, internal fetch to own API can fail or return 404; we always fall back to in-process JSON so set-user works.
  */
 export async function getUserByEmail(email: string): Promise<User | undefined> {
+  const fromFallback = () => usersFallback.find((u) => u.email === email);
   try {
     const base = getMockApiBaseUrl();
     const res = await fetch(`${base}/api/mock/users/by-email?email=${encodeURIComponent(email)}`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) return undefined;
+    if (!res.ok) return fromFallback();
     const data = (await res.json()) as { user: User };
-    return data.user;
+    return data.user ?? fromFallback();
   } catch {
-    return usersFallback.find((u) => u.email === email);
+    return fromFallback();
   }
 }
 

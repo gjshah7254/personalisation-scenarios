@@ -29,12 +29,21 @@ type PerUserSegmentConfig = {
  * API returns only segment + personalisationRules; personalisedComponentIds are merged from segment-personalised-components (for other scenarios).
  */
 async function getSegmentConfigForUser(email: string): Promise<PerUserSegmentConfig | null> {
+  const fromFallback = (): PerUserSegmentConfig | null => {
+    const segment = fallbackMock.userSegments?.[email];
+    if (segment === undefined) return null;
+    return {
+      segment,
+      personalisedComponentIds: fallbackPersonalised[segment] ?? [],
+      personalisationRules: fallbackMock.personalisationRulesBySegment?.[segment] ?? [],
+    };
+  };
   try {
     const base = getMockApiBaseUrl();
     const res = await fetch(`${base}/api/mock/salesforce/segment-config?email=${encodeURIComponent(email)}`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) return null;
+    if (!res.ok) return fromFallback();
     const data = (await res.json()) as { segment: Segment; personalisationRules: PersonalisationRule[] };
     const { segment, personalisationRules } = data;
     return {
@@ -43,13 +52,7 @@ async function getSegmentConfigForUser(email: string): Promise<PerUserSegmentCon
       personalisationRules,
     };
   } catch {
-    const segment = fallbackMock.userSegments?.[email];
-    if (segment === undefined) return null;
-    return {
-      segment,
-      personalisedComponentIds: fallbackPersonalised[segment] ?? [],
-      personalisationRules: fallbackMock.personalisationRulesBySegment?.[segment] ?? [],
-    };
+    return fromFallback();
   }
 }
 
