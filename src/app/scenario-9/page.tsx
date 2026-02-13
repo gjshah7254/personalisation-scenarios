@@ -5,6 +5,9 @@ import { getRequestBaseUrl } from "@/lib/get-request-base-url";
 import { normaliseComponentParam } from "@/lib/normalise-component-param";
 import { ScenarioExplanation } from "@/app/components/ScenarioExplanation";
 
+/** Allow CDN to cache by full URL (path + component query params). Same URL = cache hit. */
+export const revalidate = 60;
+
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
