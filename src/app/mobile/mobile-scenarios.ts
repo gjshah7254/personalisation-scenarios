@@ -110,8 +110,8 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
       "Mobile sends a single URL (GET /api/mobile/content) with segment in the x-segment header (e.g. x-segment: A or x-segment: B).",
       "Edge middleware runs before the request hits the API. Middleware does not read any cookie.",
       "Middleware reads the x-segment header, normalises to A or B (default A if missing), and rewrites the path to /api/mobile/content/A or /api/mobile/content/B.",
-      "The API route at /api/mobile/content/[segment] receives the segment from the path and returns segment-specific JSON with Cache-Control: public, s-maxage=60, stale-while-revalidate=300.",
-      "Vercel CDN caches the response by URL. Each segment gets a separate cache entry (two entries per resource: A and B).",
+      "The API route at /api/mobile/content/[segment] receives the segment from the path and returns segment-specific JSON with Cache-Control: public, s-maxage=60, stale-while-revalidate=300 and Vary: x-segment.",
+      "Vary: x-segment tells the CDN to partition the cache by the x-segment request header, so segment A and segment B get separate cached responses (required because the client URL is always /api/mobile/content).",
       "Second request with the same segment (same effective URL after rewrite) is served from the CDN (HIT); API route runs only on cache miss.",
     ],
     vercelUsage: [

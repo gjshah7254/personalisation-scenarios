@@ -32,5 +32,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
 
   const res = Response.json(data);
   res.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+  // CDN must vary cache by request header so segment A and B get different cached responses
+  res.headers.set("Vary", "x-segment");
   return res;
 }
