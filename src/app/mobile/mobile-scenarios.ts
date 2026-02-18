@@ -1,4 +1,9 @@
-export const mobileScenarioSlugs = ["user-in-url", "segment-in-url", "vary-header"] as const;
+export const mobileScenarioSlugs = [
+  "user-in-url",
+  "segment-in-url",
+  "vary-header",
+  "middleware-header",
+] as const;
 export type MobileScenarioSlug = (typeof mobileScenarioSlugs)[number];
 
 export interface MobileScenarioDetail {
@@ -88,6 +93,30 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
     vercelUsage: [
       "Depends on CDN: if Vary is part of the cache key, one entry per user; if not, only one entry (not suitable for personalisation).",
       "Recommend verifying Vercel behaviour before relying on this for production.",
+    ],
+  },
+  "middleware-header": {
+    slug: "middleware-header",
+    title: "Scenario 4: Segment in header, middleware rewrite",
+    subtitle: "Single URL, header drives segment; CDN cache per segment",
+    description:
+      "Mobile sends one URL with the x-segment header. Middleware rewrites to a segment-specific path; the API returns personalised JSON. Response cached by URL per segment.",
+    urlShape: "GET /api/mobile/content (header: x-segment)",
+    urlExamples: [
+      "GET /api/mobile/content with header x-segment: A",
+      "GET /api/mobile/content with header x-segment: B",
+    ],
+    technicalSteps: [
+      "Mobile sends a single URL (GET /api/mobile/content) with segment in the x-segment header (e.g. x-segment: A or x-segment: B).",
+      "Edge middleware runs before the request hits the API. Middleware does not read any cookie.",
+      "Middleware reads the x-segment header, normalises to A or B (default A if missing), and rewrites the path to /api/mobile/content/A or /api/mobile/content/B.",
+      "The API route at /api/mobile/content/[segment] receives the segment from the path and returns segment-specific JSON with Cache-Control: public, s-maxage=60, stale-while-revalidate=300.",
+      "Vercel CDN caches the response by URL. Each segment gets a separate cache entry (two entries per resource: A and B).",
+      "Second request with the same segment (same effective URL after rewrite) is served from the CDN (HIT); API route runs only on cache miss.",
+    ],
+    vercelUsage: [
+      "One cache entry per segment per resource. First request per segment = 1 Edge Middleware + 1 serverless invocation; subsequent requests within TTL = CDN HIT (middleware may still run at edge).",
+      "Middleware runs at edge; API route runs only on cache miss.",
     ],
   },
 };

@@ -15,6 +15,27 @@ export function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
+  // Scenario 10: Same as 3 but segment from header (or query for demo); no cookie
+  if (pathname === "/scenario-10" || pathname === "/scenario-10/") {
+    const raw =
+      request.headers.get("x-segment") ??
+      request.nextUrl.searchParams.get("segment") ??
+      "A";
+    const segment = raw === "B" ? "B" : "A";
+    const url = request.nextUrl.clone();
+    url.pathname = `/scenario-10/${segment}`;
+    return NextResponse.rewrite(url);
+  }
+
+  // Mobile API: segment in header only; rewrite to segment-specific path for CDN cache
+  if (pathname === "/api/mobile/content" || pathname === "/api/mobile/content/") {
+    const raw = request.headers.get("x-segment") ?? "A";
+    const segment = raw === "B" ? "B" : "A";
+    const url = request.nextUrl.clone();
+    url.pathname = `/api/mobile/content/${segment}`;
+    return NextResponse.rewrite(url);
+  }
+
   // Scenario 9: Read session cookie; add component query params for /scenario-9
   if (pathname === "/scenario-9" || pathname === "/scenario-9/") {
     const sessionCookie = request.cookies.get(SESSION_COOKIE)?.value;
@@ -53,5 +74,14 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/scenario-3", "/scenario-3/", "/scenario-9", "/scenario-9/"],
+  matcher: [
+    "/scenario-3",
+    "/scenario-3/",
+    "/scenario-10",
+    "/scenario-10/",
+    "/api/mobile/content",
+    "/api/mobile/content/",
+    "/scenario-9",
+    "/scenario-9/",
+  ],
 };

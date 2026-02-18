@@ -64,6 +64,13 @@ const scenarios = [
     description:
       "Set user → mock API returns user context (segment + which pages/components to personalise). Stored in session cookie. Middleware adds component query params; CDN caches per URL.",
   },
+  {
+    href: "/api/redirect-to-scenario-10",
+    title: "Scenario 10",
+    subtitle: "Whole page at middleware by segment (header-based)",
+    description:
+      "Same as Scenario 3 but middleware reads segment from request header (or query for demo). No cookie in middleware; link uses a redirect so Login still drives segment.",
+  },
 ];
 
 export default function HomePage() {

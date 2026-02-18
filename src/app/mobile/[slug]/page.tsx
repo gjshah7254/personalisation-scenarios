@@ -5,6 +5,7 @@ import {
   mobileScenariosDetail,
   type MobileScenarioSlug,
 } from "../mobile-scenarios";
+import { MobileContentApiButton } from "../MobileContentApiButton";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -31,6 +32,8 @@ export default async function MobileScenarioDetailPage({ params }: PageProps) {
         <p className="mt-1 text-sm font-medium text-indigo-400">{scenario.subtitle}</p>
         <p className="mt-2 text-zinc-400">{scenario.description}</p>
       </div>
+
+      {scenario.slug === "middleware-header" && <MobileContentApiButton />}
 
       <section className="rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
         <h2 className="text-lg font-semibold text-white">URL shape</h2>

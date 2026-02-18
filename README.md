@@ -27,6 +27,7 @@ Mock users and segments are defined in `src/data/users.json`.
 | **3** | **Whole page at middleware** — Middleware detects segment (cookie) and rewrites to a segment-specific static path. Pages are pre-generated per segment and CDN-cached. |
 | **4** | **Middleware + Server Component hybrid** — Segment from cookie; static shell with a Server Component that fetches segment-based data (cache can be per segment). |
 | **5** | **Streaming + partial personalisation** — Static shell streams first; personalised sections stream in server-side (RSC streaming). |
+| **10** | **Whole page at middleware (header-based)** — Like 3 but segment from `x-segment` header or `segment` query param; no cookie read in middleware. |
 
 ## Deploy to Vercel
 
