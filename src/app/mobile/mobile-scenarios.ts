@@ -100,23 +100,22 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
     title: "Scenario 4: Segment in header, middleware rewrite",
     subtitle: "Single URL, header drives segment; CDN cache per segment",
     description:
-      "Mobile sends one URL with the x-segment header. Middleware rewrites to a segment-specific path; the API returns personalised JSON. Response cached by URL per segment.",
-    urlShape: "GET /api/mobile/content (header: x-segment)",
+      "Mobile can send a single URL with the x-segment header (middleware rewrites) or call /api/mobile/content/A or /api/mobile/content/B directly. On Vercel, Vary is overwritten so header-based requests share one cache entry; use path-based URLs for correct CDN cache per segment.",
+    urlShape: "GET /api/mobile/content (header: x-segment) or GET /api/mobile/content/A | /api/mobile/content/B",
     urlExamples: [
       "GET /api/mobile/content with header x-segment: A",
-      "GET /api/mobile/content with header x-segment: B",
+      "GET /api/mobile/content/A (path-based; recommended for correct CDN cache on Vercel)",
+      "GET /api/mobile/content/B",
     ],
     technicalSteps: [
-      "Mobile sends a single URL (GET /api/mobile/content) with segment in the x-segment header (e.g. x-segment: A or x-segment: B).",
-      "Edge middleware runs before the request hits the API. Middleware does not read any cookie.",
-      "Middleware reads the x-segment header, normalises to A or B (default A if missing), and rewrites the path to /api/mobile/content/A or /api/mobile/content/B.",
-      "The API route at /api/mobile/content/[segment] receives the segment from the path and returns segment-specific JSON with Cache-Control: public, s-maxage=60, stale-while-revalidate=300 and Vary: x-segment.",
-      "Vary: x-segment tells the CDN to partition the cache by the x-segment request header, so segment A and segment B get separate cached responses (required because the client URL is always /api/mobile/content).",
-      "Second request with the same segment (same effective URL after rewrite) is served from the CDN (HIT); API route runs only on cache miss.",
+      "Option A — Header: Mobile sends GET /api/mobile/content with x-segment header. Middleware rewrites to /api/mobile/content/A or B. On Vercel the response Vary header is overwritten, so the CDN does not partition by x-segment; the first segment cached can be returned for all (wrong).",
+      "Option B — Path (recommended): Mobile sends GET /api/mobile/content/A or GET /api/mobile/content/B. No middleware; request hits the route directly. Cache key is the URL, so segment A and B get separate cached responses. Correct on Vercel.",
+      "The API route at /api/mobile/content/[segment] returns segment-specific JSON with Cache-Control: public, s-maxage=60, stale-while-revalidate=300.",
+      "The Try it button on this page uses path-based URLs so A and B always get the correct cached response.",
     ],
     vercelUsage: [
-      "One cache entry per segment per resource. First request per segment = 1 Edge Middleware + 1 serverless invocation; subsequent requests within TTL = CDN HIT (middleware may still run at edge).",
-      "Middleware runs at edge; API route runs only on cache miss.",
+      "Path-based (/api/mobile/content/A or B): one cache entry per segment; CDN HIT per segment.",
+      "Header-based (/api/mobile/content + x-segment): cache may be shared across segments on Vercel; use path-based for correct behavior.",
     ],
   },
 };

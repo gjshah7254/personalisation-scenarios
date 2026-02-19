@@ -32,10 +32,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
 
   const res = Response.json(data);
   res.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
-  // CDN must vary by x-segment. Next/Vercel often set Vary to RSC/router values; include those and add x-segment
-  // so the response that reaches the edge has x-segment in Vary for correct cache partitioning.
-  const baseVary =
-    "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch";
-  res.headers.set("Vary", `${baseVary}, x-segment`);
+  // Vercel overwrites Vary, so single-URL + x-segment header does not partition cache. For correct
+  // CDN caching, callers should use path-based URLs: /api/mobile/content/A or /api/mobile/content/B.
   return res;
 }
