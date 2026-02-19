@@ -31,8 +31,9 @@ export async function GET(_request: Request, { params }: RouteParams) {
   };
 
   const res = Response.json(data);
-  // Single URL + x-segment header: Vercel overwrites Vary so CDN would not partition by header.
-  // Disable CDN cache so every request hits origin and returns the correct segment.
-  res.headers.set("Cache-Control", "private, no-store");
+  res.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+  // Append x-segment to Vary so CDN partitions cache by header (middleware also sets it; route may be overwritten by framework).
+  const existing = res.headers.get("Vary") ?? "";
+  res.headers.set("Vary", existing ? `${existing}, x-segment` : "x-segment");
   return res;
 }

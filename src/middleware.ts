@@ -33,7 +33,11 @@ export function middleware(request: NextRequest) {
     const segment = raw === "B" ? "B" : "A";
     const url = request.nextUrl.clone();
     url.pathname = `/api/mobile/content/${segment}`;
-    return NextResponse.rewrite(url);
+    const res = NextResponse.rewrite(url);
+    // Set Vary in middleware so it may survive (route response can overwrite; Vercel often does).
+    // Enables CDN to partition cache by x-segment for same URL.
+    res.headers.set("Vary", "x-segment");
+    return res;
   }
 
   // Scenario 9: Read session cookie; add component query params for /scenario-9

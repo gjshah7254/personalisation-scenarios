@@ -100,7 +100,7 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
     title: "Scenario 4: Segment in header, middleware rewrite",
     subtitle: "Single URL, header drives segment; CDN cache per segment",
     description:
-      "Mobile sends a single URL (GET /api/mobile/content) with the x-segment header only; no segment in the path. Middleware rewrites to the segment-specific handler. Response uses Cache-Control: private, no-store so the CDN does not cache (Vercel overwrites Vary), ensuring the correct segment every time.",
+      "Mobile sends a single URL (GET /api/mobile/content) with the x-segment header only; no segment in the path. Middleware rewrites to the segment-specific handler. Response is cacheable with Vary: x-segment (set in middleware and route) so the same user gets cache HITs.",
     urlShape: "GET /api/mobile/content (header: x-segment)",
     urlExamples: [
       "GET /api/mobile/content with header x-segment: A",
@@ -108,14 +108,12 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
     ],
     technicalSteps: [
       "Mobile sends a single URL GET /api/mobile/content with segment in the x-segment header (e.g. x-segment: A or x-segment: B). No segment in the URL path.",
-      "Edge middleware runs before the request hits the API. Middleware does not read any cookie.",
-      "Middleware reads the x-segment header, normalises to A or B (default A if missing), and rewrites the path to /api/mobile/content/A or /api/mobile/content/B internally.",
-      "The API route at /api/mobile/content/[segment] returns segment-specific JSON. Response sets Cache-Control: private, no-store so the CDN does not cache it.",
-      "Because Vercel overwrites the Vary header, the CDN would not partition cache by x-segment if we allowed caching; so we disable cache and every request hits the origin, returning the correct segment.",
+      "Edge middleware runs, reads x-segment, rewrites to /api/mobile/content/A or B, and sets Vary: x-segment on the response so the CDN partitions cache by header.",
+      "The API route returns segment-specific JSON with Cache-Control: public, s-maxage=60, stale-while-revalidate=300 and appends x-segment to Vary.",
+      "Same user (same x-segment) on repeat requests can get CDN HIT; different segments get different cached responses if the CDN honors Vary.",
     ],
     vercelUsage: [
-      "Every request: 1 Edge Middleware + 1 serverless invocation (no CDN cache for this endpoint).",
-      "Correct segment guaranteed for single URL + header; trade-off is no cache benefit.",
+      "First request per segment: 1 Edge Middleware + 1 serverless invocation; repeat same segment: CDN HIT if Vary: x-segment is preserved by the edge.",
     ],
   },
 };
