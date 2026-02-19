@@ -24,9 +24,8 @@ export function MobileContentApiButton() {
         return;
       }
       const segment = context.segment;
-      // Use path-based URL so CDN cache key includes segment (Vercel overwrites Vary, so header-based
-      // /api/mobile/content would share one cache entry for all segments and return wrong data).
-      const apiRes = await fetch(`/api/mobile/content/${segment}`, {
+      const apiRes = await fetch("/api/mobile/content", {
+        headers: { "x-segment": segment },
         cache: "no-store",
       });
       if (!apiRes.ok) {
@@ -46,10 +45,10 @@ export function MobileContentApiButton() {
     <section className="rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
       <h2 className="text-lg font-semibold text-white">Try it</h2>
       <p className="mt-2 text-sm text-zinc-400">
-        Fetch API data using your current segment (from Login). The request uses{" "}
-        <code className="rounded bg-zinc-700 px-1.5 py-0.5 text-indigo-300">/api/mobile/content/A</code> or{" "}
-        <code className="rounded bg-zinc-700 px-1.5 py-0.5 text-indigo-300">/api/mobile/content/B</code> so
-        the CDN cache key includes the segment and A/B always get the correct response on Vercel.
+        Fetch API data using your current segment (from Login). The request uses a single URL{" "}
+        <code className="rounded bg-zinc-700 px-1.5 py-0.5 text-indigo-300">/api/mobile/content</code> with
+        the <code className="rounded bg-zinc-700 px-1.5 py-0.5 text-indigo-300">x-segment</code> header;
+        middleware rewrites to the segment-specific handler.
       </p>
       <button
         type="button"

@@ -31,8 +31,8 @@ export async function GET(_request: Request, { params }: RouteParams) {
   };
 
   const res = Response.json(data);
-  res.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
-  // Vercel overwrites Vary, so single-URL + x-segment header does not partition cache. For correct
-  // CDN caching, callers should use path-based URLs: /api/mobile/content/A or /api/mobile/content/B.
+  // Single URL + x-segment header: Vercel overwrites Vary so CDN would not partition by header.
+  // Disable CDN cache so every request hits origin and returns the correct segment.
+  res.headers.set("Cache-Control", "private, no-store");
   return res;
 }
