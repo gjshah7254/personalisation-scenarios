@@ -1,0 +1,37 @@
+{
+  "components": [
+    {
+      "id": "promo",
+      "segmentA": {
+        "title": "Segment A offer",
+        "body": "20% off your first order. Use code SEG-A at checkout."
+      },
+      "segmentB": {
+        "title": "Segment B offer",
+        "body": "Free shipping on all orders. No code needed."
+      }
+    },
+    {
+      "id": "feature",
+      "segmentA": {
+        "title": "Feature for Segment A",
+        "body": "Premium analytics and reporting included."
+      },
+      "segmentB": {
+        "title": "Feature for Segment B",
+        "body": "Simple dashboard and quick insights."
+      }
+    },
+    {
+      "id": "cta",
+      "segmentA": {
+        "title": "Segment A CTA",
+        "body": "Start your free trial — full access for 14 days."
+      },
+      "segmentB": {
+        "title": "Segment B CTA",
+        "body": "Book a demo and we'll show you the ropes."
+      }
+    }
+  ]
+}

@@ -71,6 +71,20 @@ const scenarios = [
     description:
       "Same as Scenario 3 but middleware reads segment from request header (or query for demo). No cookie in middleware; link uses a redirect so Login still drives segment.",
   },
+  {
+    href: "/scenario-11",
+    title: "Scenario 11",
+    subtitle: "Partial Prerendering (PPR)",
+    description:
+      "Static shell is prerendered; dynamic block inside Suspense runs at request time and streams in. Requires experimental PPR.",
+  },
+  {
+    href: "/scenario-12",
+    title: "Scenario 12",
+    subtitle: "Cache Components",
+    description:
+      "Next.js 16 Cache Components: use cache + cacheLife. Shared data cached and reused until revalidation.",
+  },
 ];
 
 export default function HomePage() {

@@ -4,7 +4,7 @@ import { SEGMENT_COOKIE, SESSION_COOKIE } from "@/lib/cookie-names";
 import { normaliseComponentParam } from "@/lib/normalise-component-param";
 import type { PersonalisationSession } from "@/lib/types";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Scenario 3: Rewrite to segment-specific path for segment-based static pages
@@ -34,7 +34,7 @@ export function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = `/api/mobile/content/${segment}`;
     const res = NextResponse.rewrite(url);
-    // Set Vary in middleware so it may survive (route response can overwrite; Vercel often does).
+    // Set Vary in proxy so it may survive (route response can overwrite; Vercel often does).
     // Enables CDN to partition cache by x-segment for same URL.
     res.headers.set("Vary", "x-segment");
     return res;

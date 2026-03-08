@@ -1,18 +1,18 @@
 import Link from "next/link";
-import { getCurrentUserEmail } from "@/lib/cookies";
-import { getSalesforceUserContext } from "@/lib/salesforce";
+import { Suspense } from "react";
 import { ScenarioExplanation } from "@/app/components/ScenarioExplanation";
 import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
-import { SegmentDataBlock } from "./SegmentDataBlock";
+import { Scenario4DynamicContent } from "./Scenario4DynamicContent";
 
-const COMPONENT_ID = "scenario-4-block" as const;
+function Placeholder() {
+  return (
+    <div className="mt-3 rounded-lg border border-dashed border-zinc-600 p-4 text-zinc-500">
+      Loading…
+    </div>
+  );
+}
 
-export default async function Scenario4Page() {
-  const email = await getCurrentUserEmail();
-  const sfContext = email ? await getSalesforceUserContext(email) : null;
-  const segment = sfContext?.segment;
-  const shouldPersonalise = sfContext?.personalisedComponentIds.includes(COMPONENT_ID) ?? false;
-
+export default function Scenario4Page() {
   return (
     <div className="space-y-8">
       <div>
@@ -35,7 +35,9 @@ export default async function Scenario4Page() {
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
           Segment-based data (RSC, segment from Salesforce)
         </h2>
-        <SegmentDataBlock segment={segment} shouldPersonalise={shouldPersonalise} />
+        <Suspense fallback={<Placeholder />}>
+          <Scenario4DynamicContent />
+        </Suspense>
       </div>
 
       <ScenarioExplanation

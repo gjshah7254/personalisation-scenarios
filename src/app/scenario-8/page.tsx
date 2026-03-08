@@ -1,16 +1,18 @@
 import Link from "next/link";
-import { getCurrentUserEmail } from "@/lib/cookies";
-import { getSalesforceUserContextCached } from "@/lib/salesforce";
+import { Suspense } from "react";
 import { ScenarioExplanation } from "@/app/components/ScenarioExplanation";
 import { StaticBuildTimeBlock } from "@/app/components/StaticBuildTimeBlock";
+import { Scenario8DynamicContent } from "./Scenario8DynamicContent";
 
-const COMPONENT_ID = "scenario-8-block" as const;
+function Placeholder() {
+  return (
+    <div className="mt-3 rounded-lg border border-dashed border-zinc-600 p-4 text-zinc-500">
+      Loading…
+    </div>
+  );
+}
 
-export default async function Scenario8Page() {
-  const email = await getCurrentUserEmail();
-  const sfContext = email ? await getSalesforceUserContextCached(email) : null;
-  const shouldPersonalise = sfContext?.personalisedComponentIds.includes(COMPONENT_ID) ?? false;
-
+export default function Scenario8Page() {
   return (
     <div className="space-y-8">
       <div>
@@ -33,20 +35,9 @@ export default async function Scenario8Page() {
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
           Personalised content (1:1, RSC + data cache, segment from Salesforce)
         </h2>
-        {!sfContext ? (
-          <p className="mt-3 text-zinc-400">
-            No user selected. Use &quot;Login&quot; in the header to pick a user.
-          </p>
-        ) : !shouldPersonalise ? (
-          <p className="mt-3 text-zinc-500">
-            This component is not personalised for your segment (Salesforce context).
-          </p>
-        ) : (
-          <div className="mt-3 rounded-lg bg-amber-500/10 p-4 text-amber-200">
-            <p className="font-medium">1:1 personalisation (data cache, Salesforce context)</p>
-            <p className="mt-1 text-sm">Hello {sfContext.user.name}, here&apos;s your content.</p>
-          </div>
-        )}
+        <Suspense fallback={<Placeholder />}>
+          <Scenario8DynamicContent />
+        </Suspense>
       </div>
 
       <ScenarioExplanation

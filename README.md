@@ -28,6 +28,8 @@ Mock users and segments are defined in `src/data/users.json`.
 | **4** | **Middleware + Server Component hybrid** — Segment from cookie; static shell with a Server Component that fetches segment-based data (cache can be per segment). |
 | **5** | **Streaming + partial personalisation** — Static shell streams first; personalised sections stream in server-side (RSC streaming). |
 | **10** | **Whole page at middleware (header-based)** — Like 3 but segment from `x-segment` header or `segment` query param; no cookie read in middleware. |
+| **11** | **Partial Prerendering (PPR)** — Pattern: static shell + Suspense with dynamic block (streams in). Full PPR requires Next.js canary and `experimental.ppr: 'incremental'`. |
+| **12** | **Cache Components** — Pattern: cacheable component/fetch with `use cache` and `cacheLife`. Full behavior requires Next.js canary and `experimental.cacheComponents: true`. |
 
 ## Deploy to Vercel
 

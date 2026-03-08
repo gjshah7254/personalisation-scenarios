@@ -1,0 +1,5 @@
+{
+  "title": "Cached content (mock)",
+  "message": "This data is shared across all users. The block fetches from GET /api/mock/cached-content; the result is cached with use cache + cacheLife.",
+  "updatedAt": "2025-02-19T12:00:00Z"
+}
