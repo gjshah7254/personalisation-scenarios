@@ -1,5 +1,6 @@
 import { cacheLife } from "next/cache";
 import { getMockApiBaseUrl } from "@/lib/mock-api-base-url";
+import cachedContentMock from "@/data/cached-content-mock.json";
 
 type CachedContentMock = {
   title?: string;
@@ -10,14 +11,20 @@ type CachedContentMock = {
 /**
  * Block that fetches shared data from our mock API. Uses Next.js 16 Cache Components:
  * 'use cache' + cacheLife('minutes') so the result is cached and reused until revalidation.
+ * At build time (no server running) we use imported mock data to avoid ECONNREFUSED.
  */
 export async function CachedDataBlock() {
   "use cache";
   cacheLife("minutes"); // revalidate 1 min, expire 1 hour
 
-  const base = getMockApiBaseUrl();
-  const res = await fetch(`${base}/api/mock/cached-content`);
-  const data = (await res.json()) as CachedContentMock;
+  let data: CachedContentMock;
+  try {
+    const base = getMockApiBaseUrl();
+    const res = await fetch(`${base}/api/mock/cached-content`);
+    data = (await res.json()) as CachedContentMock;
+  } catch {
+    data = cachedContentMock as CachedContentMock;
+  }
   const title = data.title ?? "Cached content (mock)";
   const message = data.message ?? "";
   const updatedAt = data.updatedAt ? new Date(data.updatedAt).toLocaleString() : "";
