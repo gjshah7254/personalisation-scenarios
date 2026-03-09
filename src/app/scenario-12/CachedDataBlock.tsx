@@ -1,15 +1,15 @@
 import { cacheLife } from "next/cache";
 import { getMockApiBaseUrl } from "@/lib/mock-api-base-url";
-import cachedContentMock from "@/data/cached-content-mock.json";
+import contentfulCachedMock from "@/data/contentful-cached-mock.json";
 
-type CachedContentMock = {
+type ContentfulCachedMock = {
   title?: string;
   message?: string;
   updatedAt?: string;
 };
 
 /**
- * Block that fetches shared data from our mock API. Uses Next.js 16 Cache Components:
+ * Block that fetches shared content from mock Contentful API. Uses Next.js 16 Cache Components:
  * 'use cache' + cacheLife('minutes') so the result is cached and reused until revalidation.
  * At build time (no server running) we use imported mock data to avoid ECONNREFUSED.
  */
@@ -17,15 +17,15 @@ export async function CachedDataBlock() {
   "use cache";
   cacheLife("minutes"); // revalidate 1 min, expire 1 hour
 
-  let data: CachedContentMock;
+  let data: ContentfulCachedMock;
   try {
     const base = getMockApiBaseUrl();
-    const res = await fetch(`${base}/api/mock/cached-content`);
-    data = (await res.json()) as CachedContentMock;
+    const res = await fetch(`${base}/api/mock/contentful/cached`);
+    data = (await res.json()) as ContentfulCachedMock;
   } catch {
-    data = cachedContentMock as CachedContentMock;
+    data = contentfulCachedMock as ContentfulCachedMock;
   }
-  const title = data.title ?? "Cached content (mock)";
+  const title = data.title ?? "Cached content (Contentful mock)";
   const message = data.message ?? "";
   const updatedAt = data.updatedAt ? new Date(data.updatedAt).toLocaleString() : "";
 
@@ -35,7 +35,7 @@ export async function CachedDataBlock() {
       <p className="mt-1 text-sm">
         This block uses <code className="rounded bg-zinc-700 px-1">use cache</code> and{" "}
         <code className="rounded bg-zinc-700 px-1">cacheLife(&quot;minutes&quot;)</code>. It fetches
-        from <code className="rounded bg-zinc-700 px-1">GET /api/mock/cached-content</code>; the
+        from <code className="rounded bg-zinc-700 px-1">GET /api/mock/contentful/cached</code>; the
         result is cached and reused until revalidation.
       </p>
       {message && (

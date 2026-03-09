@@ -1,0 +1,5 @@
+{
+  "title": "Cached content (Contentful mock)",
+  "message": "Shared content from GET /api/mock/contentful/cached. Cached with use cache + cacheLife.",
+  "updatedAt": "2025-02-19T12:00:00Z"
+}

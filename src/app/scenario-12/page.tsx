@@ -47,7 +47,7 @@ export default function Scenario12Page() {
 
       <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
         <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
-          Three personalised components (mock data by segment)
+          Personalised components (Salesforce segment → Contentful entries)
         </h2>
         <Suspense fallback={<CardsFallback />}>
           <SegmentPersonalisedCards />
@@ -63,10 +63,10 @@ export default function Scenario12Page() {
         secondRequestFromCacheNote="cached component output reused until cacheLife revalidation"
         steps={[
           "Enable cacheComponents: true in next.config (Next.js 16 stable).",
-          "CachedDataBlock uses the 'use cache' directive and cacheLife('minutes') so its output is cached.",
-          "The component fetches shared data from GET /api/mock/cached-content. First request runs the fetch and caches the result.",
-          "Subsequent requests reuse the cached result until the cache profile triggers revalidation.",
-          "Cache keys are derived from the function identity and serializable inputs; no request-only data (cookies/headers) inside use cache.",
+          "Login (set-user): Salesforce called once, segment/ctxKey stored in cookie. No middleware reads cookie.",
+          "Cached block: fetches from GET /api/mock/contentful/cached (use cache + cacheLife). No cookie. First request runs and caches, repeat requests use cache.",
+          "Personalised block (inside Suspense): cookies() → read segment/ctxKey from cookie, then GET /api/mock/contentful/entries?segment=… for content. No Salesforce call on page.",
+          "Cache keys for use cache: function identity and serializable inputs, no cookies/headers inside use cache.",
         ]}
         vercelUsage={[
           "First request: component runs, fetch executes, result cached. Later requests: cached result served (no refetch until revalidate).",

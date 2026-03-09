@@ -1,45 +1,42 @@
-import { getCurrentUserEmail } from "@/lib/cookies";
-import { getSalesforceUserContext } from "@/lib/salesforce";
+import { getSegmentFromCookie } from "@/lib/cookies";
 import type { Segment } from "@/lib/types";
-import segmentContentMock from "@/data/segment-content-mock.json";
+import { getMockApiBaseUrl } from "@/lib/mock-api-base-url";
 
-type CardContent = { title: string; body: string };
-type ComponentSpec = { id: string; segmentA: CardContent; segmentB: CardContent };
-
-const components = segmentContentMock.components as ComponentSpec[];
+type ContentfulEntry = { id: string; title: string; body: string };
 
 /**
- * Async component: reads segment from cookies + Salesforce, renders 3 cards from mock data.
- * Use inside Suspense on Scenario 11 and 12.
+ * Async component: reads ctxKey/segment from cookie (set at login, no Salesforce call on page),
+ * then fetches personalised content from Contentful (mock) entries API.
+ * Use inside Suspense on Scenario 11 and 12. Matches "cookie read in App" flow (no middleware).
  */
 export async function SegmentPersonalisedCards() {
-  const email = await getCurrentUserEmail();
-  const sfContext = email ? await getSalesforceUserContext(email) : null;
-  const segment: Segment = sfContext?.segment === "B" ? "B" : "A";
+  const segment = await getSegmentFromCookie();
 
-  if (!sfContext) {
+  if (segment === undefined) {
     return (
       <p className="text-zinc-400">
-        No user selected. Use <strong>Login</strong> in the header to pick a user and see segment-specific content.
+        No user selected. Use <strong>Login</strong> in the header to pick a user (Salesforce runs once at login, segment stored in cookie).
       </p>
     );
   }
 
+  const base = getMockApiBaseUrl();
+  const res = await fetch(`${base}/api/mock/contentful/entries?segment=${segment}`);
+  const data = (await res.json()) as { segment: Segment; entries: ContentfulEntry[] };
+  const entries = data.entries ?? [];
+
   return (
     <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {components.map((spec) => {
-        const content = segment === "B" ? spec.segmentB : spec.segmentA;
-        return (
-          <div
-            key={spec.id}
-            className="rounded-lg border border-zinc-700 bg-zinc-800/80 p-4"
-          >
-            <p className="font-medium text-white">{content.title}</p>
-            <p className="mt-1 text-sm text-zinc-300">{content.body}</p>
-            <p className="mt-2 text-xs text-zinc-500">Segment {segment}</p>
-          </div>
-        );
-      })}
+      {entries.map((entry) => (
+        <div
+          key={entry.id}
+          className="rounded-lg border border-zinc-700 bg-zinc-800/80 p-4"
+        >
+          <p className="font-medium text-white">{entry.title}</p>
+          <p className="mt-1 text-sm text-zinc-300">{entry.body}</p>
+          <p className="mt-2 text-xs text-zinc-500">Segment {segment} (Contentful)</p>
+        </div>
+      ))}
     </div>
   );
 }
