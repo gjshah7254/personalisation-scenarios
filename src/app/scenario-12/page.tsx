@@ -27,6 +27,11 @@ export default function Scenario12Page() {
         <h1 className="mt-2 text-2xl font-bold text-white">
           Scenario 12: Cache Components
         </h1>
+        <p className="mt-1">
+          <Link href="/scenario-12/demo" className="text-sm text-indigo-400 hover:underline">
+            Demo: 10 components (2 static, 8 personalised) →
+          </Link>
+        </p>
         <p className="mt-1 text-zinc-400">
           Next.js 16 Cache Components let you mark components or functions with{" "}
           <code className="rounded bg-zinc-700 px-1">use cache</code> so their return value is
