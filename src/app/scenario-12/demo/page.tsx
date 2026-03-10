@@ -4,12 +4,21 @@ import { StaticBlock1 } from "./StaticBlock1";
 import { StaticBlock2 } from "./StaticBlock2";
 import { PersonalisedBlock } from "./PersonalisedBlock";
 
-/** Default/placeholder shown in shell until the personalised component streams in. */
+/** Default/placeholder shown in shell until the personalised component streams in. Taller so streaming transition is visible. */
 function PersonalisedFallback({ id }: { id: number }) {
   return (
-    <div className="rounded-lg border border-dashed border-zinc-600 bg-zinc-800/30 p-4 text-zinc-500">
-      <p className="font-medium">Component {id} (default)</p>
-      <p className="mt-1 text-sm">Loading personalised content…</p>
+    <div className="rounded-lg border border-dashed border-zinc-600 bg-zinc-800/30 p-5 text-zinc-500 animate-pulse">
+      <div className="h-6 w-3/4 rounded bg-zinc-600/50" />
+      <div className="mt-3 h-4 w-full rounded bg-zinc-600/40" />
+      <div className="mt-2 h-4 w-5/6 rounded bg-zinc-600/40" />
+      <div className="mt-4 h-4 w-full rounded bg-zinc-600/30" />
+      <div className="mt-2 h-4 w-4/5 rounded bg-zinc-600/30" />
+      <div className="mt-2 h-4 w-2/3 rounded bg-zinc-600/30" />
+      <div className="mt-4 flex gap-2">
+        <div className="h-3 w-16 rounded bg-zinc-600/30" />
+        <div className="h-3 w-20 rounded bg-zinc-600/30" />
+      </div>
+      <p className="mt-3 text-xs text-zinc-500">Component {id} — loading…</p>
     </div>
   );
 }

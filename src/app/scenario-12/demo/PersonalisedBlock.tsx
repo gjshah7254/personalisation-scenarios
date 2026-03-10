@@ -41,10 +41,20 @@ export async function PersonalisedBlock({ componentId }: Props) {
           : "border-rose-600/50 bg-rose-500/10 text-rose-200";
 
   return (
-    <div className={`rounded-lg border p-4 ${colors}`}>
-      <p className="font-medium">{content.title}</p>
-      <p className="mt-1 text-sm opacity-90">{content.body}</p>
-      <p className="mt-2 text-xs opacity-70">
+    <div className={`rounded-lg border p-5 ${colors}`}>
+      <p className="font-medium text-lg">{content.title}</p>
+      <p className="mt-2 text-sm opacity-90">{content.body}</p>
+      {content.paragraph && (
+        <p className="mt-3 text-sm opacity-80">{content.paragraph}</p>
+      )}
+      {content.bullets && content.bullets.length > 0 && (
+        <ul className="mt-3 list-inside list-disc space-y-1 text-sm opacity-80">
+          {content.bullets.map((b, i) => (
+            <li key={i}>{b}</li>
+          ))}
+        </ul>
+      )}
+      <p className="mt-4 text-xs opacity-70">
         {segment ? `Segment ${segment}` : "Default (no user)"} · Component {componentId} (streamed)
       </p>
     </div>
