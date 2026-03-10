@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { StaticBlock1 } from "./StaticBlock1";
 import { StaticBlock2 } from "./StaticBlock2";
+import { CachedRichContent } from "./CachedRichContent";
 import { PersonalisedBlock } from "./PersonalisedBlock";
 
 /** Default/placeholder shown in shell until the personalised component streams in. Taller so streaming transition is visible. */
@@ -38,7 +39,7 @@ export default function Scenario12DemoPage() {
           Scenario 12 demo: 10 components
         </h1>
         <p className="mt-1 text-zinc-400">
-          2 static components (in shell) + 8 personalised components (streamed). Each personalised block reads the segment cookie and shows mock content; only those 8 update when the stream arrives.
+          2 static (shell) + 1 cached content block + 8 personalised (streamed, content from cache per segment). No artificial delay; personalised blocks read from cache via use cache.
         </p>
       </div>
 
@@ -49,6 +50,14 @@ export default function Scenario12DemoPage() {
         </h2>
         <StaticBlock1 />
         <StaticBlock2 />
+      </section>
+
+      {/* --- More content (from cache) --- */}
+      <section className="space-y-4">
+        <h2 className="text-sm font-medium uppercase tracking-wider text-zinc-500">
+          More content (from cache)
+        </h2>
+        <CachedRichContent />
       </section>
 
       {/* --- Personalised (8), each in Suspense with default fallback --- */}

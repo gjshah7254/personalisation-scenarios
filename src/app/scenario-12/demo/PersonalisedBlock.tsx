@@ -1,26 +1,15 @@
 import { getSegmentFromCookie } from "@/lib/cookies";
-import { PERSONALISED_MOCK } from "./mock-data";
+import { getCachedPersonalisedContent } from "./getCachedPersonalisedContent";
 
 type Props = { componentId: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 };
 
-/** Staggered delay so streaming is visible: component 1 = 0.3s, 2 = 0.6s, … 8 = 2.4s */
-function delayForComponent(componentId: number) {
-  return new Promise((r) => setTimeout(r, componentId * 300));
-}
-
 /**
  * One of 8 personalised components. Reads segment from cookie (set at login),
- * then renders mock Contentful content for that segment. Streams in when ready.
+ * then gets content from cache (use cache). Streams in when ready.
  */
 export async function PersonalisedBlock({ componentId }: Props) {
-  await delayForComponent(componentId);
   const segment = await getSegmentFromCookie();
-  const item = PERSONALISED_MOCK.find((m) => m.id === componentId);
-  const content = !item
-    ? null
-    : segment === "B"
-      ? item.segmentB
-      : item.segmentA; // default to A when no cookie (e.g. not logged in)
+  const content = await getCachedPersonalisedContent(segment ?? "A", componentId);
 
   if (!content) {
     return (
