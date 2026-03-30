@@ -3,7 +3,7 @@ export const mobileScenarioSlugs = [
   "segment-in-url",
   "vary-header",
   "middleware-header",
-  "playerid-header",
+  "bff-personalised-json",
 ] as const;
 export type MobileScenarioSlug = (typeof mobileScenarioSlugs)[number];
 
@@ -119,16 +119,18 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
       "First request per segment: 1 Edge Middleware + 1 serverless invocation; repeat same segment: CDN HIT if Vary: x-segment is preserved by the edge.",
     ],
   },
-  "playerid-header": {
-    slug: "playerid-header",
-    title: "Scenario 5: Player ID in header",
-    subtitle: "Next.js calls Salesforce and caches per user, no CDN cache",
+  "bff-personalised-json": {
+    slug: "bff-personalised-json",
+    title: "Scenario 5: BFF — assembled personalised JSON",
+    subtitle: "Mobile sends only URL + X-Player-Id; Next.js runs Salesforce, CMS, and caching",
     description:
-      "Mobile sends playerId in a header (e.g. X-Player-Id). The Next.js app calls Salesforce for user context (cached by playerId), evaluates personalisation, and returns JSON. Each component in the response is cached separately per (playerId, componentId). Response is not CDN-cacheable because identity is in the header.",
-    urlShape: "GET /api/personalised-content (header: X-Player-Id)",
+      "Backend-for-frontend pattern: the app sends a fixed URL and playerId in a header (e.g. X-Player-Id). Next.js resolves Salesforce user context (cached by playerId), evaluates personalisation, loads each component (cached per playerId + componentId), and returns one JSON payload (or optional NDJSON stream). The response is not CDN-cacheable because identity is only in the header.",
+    urlShape:
+      "GET /api/personalised-content (header: X-Player-Id); optional ?format=ndjson or Accept: application/x-ndjson",
     urlExamples: [
       "GET /api/personalised-content with header X-Player-Id: player-1",
-      "GET /api/personalised-content with header X-Player-Id: player-2",
+      "GET /api/personalised-content?format=ndjson with same header — NDJSON stream (meta, then each component line, then done)",
+      "POST /api/personalised-content — demo: revalidateTag(personalised-content) to clear Data Cache for this flow",
     ],
     technicalSteps: [
       "Mobile has playerId after login and sends it on every request via header (e.g. X-Player-Id). Mobile does not call Salesforce.",
@@ -136,7 +138,9 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
       "Route looks up Salesforce user context by playerId (mock: GET /api/mock/salesforce/user-context-by-player?playerId=...). Result is cached in the app by playerId (e.g. unstable_cache) so repeat requests do not refetch Salesforce.",
       "Next.js evaluates user context (segment, which components to personalise). All personalisation logic lives in the app.",
       "For each component in the response, route looks up content (e.g. from mock Contentful by segment + componentId). Each component result is cached in the app by (playerId, componentId).",
-      "Route returns a single JSON payload (e.g. { hero: {...}, promo: {...} }). Response uses Cache-Control: private, no-store because identity is in the header.",
+      "Default response: single JSON payload (e.g. { hero: {...}, promo: {...} }) with Cache-Control: private, no-store.",
+      "Optional NDJSON: query format=ndjson or Accept application/x-ndjson — chunked application/x-ndjson body, one JSON object per line: type meta, then type component (as each finishes in parallel), then type done.",
+      "Demo POST clears tagged unstable_cache entries (personalised-content) so the next GET recomputes.",
     ],
     vercelUsage: [
       "No CDN cache for the API response (identity in header). Every request hits the Next.js app.",

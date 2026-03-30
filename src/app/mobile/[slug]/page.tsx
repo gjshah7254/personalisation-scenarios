@@ -35,7 +35,7 @@ export default async function MobileScenarioDetailPage({ params }: PageProps) {
       </div>
 
       {scenario.slug === "middleware-header" && <MobileContentApiButton />}
-      {scenario.slug === "playerid-header" && <MobilePersonalisedContentButton />}
+      {scenario.slug === "bff-personalised-json" && <MobilePersonalisedContentButton />}
 
       <section className="rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
         <h2 className="text-lg font-semibold text-white">URL shape</h2>

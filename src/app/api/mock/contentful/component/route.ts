@@ -7,7 +7,7 @@ type SegmentMap = Record<string, Record<string, ComponentContent>>;
 const data = contentfulComponentMock as SegmentMap;
 
 /**
- * Mock Contentful API: returns content for a component by segment (for mobile Scenario 5).
+ * Mock Contentful API: returns content for a component by segment (for mobile BFF personalised JSON).
  * Query: ?segment=A|B&componentId=hero|promo
  */
 export async function GET(request: Request) {

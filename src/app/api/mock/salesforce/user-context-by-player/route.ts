@@ -1,7 +1,7 @@
 import { getSalesforceUserContextByPlayerId } from "@/lib/salesforce";
 
 /**
- * Mock Salesforce API: returns user context by playerId (for mobile Scenario 5).
+ * Mock Salesforce API: returns user context by playerId (for mobile BFF /api/personalised-content).
  * Used by GET /api/personalised-content; mobile does not call this directly.
  */
 export async function GET(request: Request) {

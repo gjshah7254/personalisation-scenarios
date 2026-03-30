@@ -98,7 +98,7 @@ export async function getSalesforceUserContextCached(
 
 const playerIdToEmail = playerIdMappingFallback as Record<string, string>;
 
-/** Resolve email from playerId (mock mapping for mobile Scenario 5). */
+/** Resolve email from playerId (mock mapping for mobile BFF /api/personalised-content). */
 export function getEmailByPlayerId(playerId: string): string | null {
   return playerIdToEmail[playerId] ?? null;
 }
@@ -112,13 +112,18 @@ export async function getSalesforceUserContextByPlayerId(
   return getSalesforceUserContext(email);
 }
 
-/** Cached user context by playerId (unstable_cache). Used by GET /api/personalised-content. */
+/**
+ * Cached user context by playerId. Module-level unstable_cache so repeat requests hit the Data Cache
+ * (wrapping unstable_cache inside an async helper on each call prevents HITs).
+ */
+const getSalesforceUserContextByPlayerIdCachedFn = unstable_cache(
+  async (playerId: string) => getSalesforceUserContextByPlayerId(playerId),
+  ["salesforce-user-context-by-player"],
+  { revalidate: 60, tags: ["personalised-content"] }
+);
+
 export async function getSalesforceUserContextByPlayerIdCached(
   playerId: string
 ): Promise<SalesforceUserContext | null> {
-  return unstable_cache(
-    async () => getSalesforceUserContextByPlayerId(playerId),
-    ["salesforce-user-context-by-player", playerId],
-    { revalidate: 60 }
-  )();
+  return getSalesforceUserContextByPlayerIdCachedFn(playerId);
 }
