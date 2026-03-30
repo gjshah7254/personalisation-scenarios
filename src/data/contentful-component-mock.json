@@ -1,0 +1,106 @@
+{
+  "A": {
+    "hero": {
+      "title": "Enterprise dashboard",
+      "subtitle": "Welcome back. Here's your overview.",
+      "cta": { "label": "View analytics", "href": "/analytics" },
+      "badge": "Premium"
+    },
+    "promo": {
+      "headline": "Premium feature",
+      "body": "Upgrade for advanced reporting and team management.",
+      "variant": "premium",
+      "actions": [{ "label": "Learn more", "href": "/premium" }]
+    },
+    "banner": {
+      "type": "announcement",
+      "message": "New: Bulk export and custom roles are now available for your team.",
+      "dismissible": true,
+      "link": { "text": "See release notes", "href": "/releases" }
+    },
+    "featured": {
+      "title": "Recommended for you",
+      "items": [
+        { "id": "f1", "title": "Team performance report", "description": "See how your team is tracking this quarter.", "href": "/reports/team" },
+        { "id": "f2", "title": "Billing overview", "description": "Usage and invoices for your organisation.", "href": "/billing" },
+        { "id": "f3", "title": "Admin settings", "description": "Manage users, roles and permissions.", "href": "/admin" }
+      ]
+    },
+    "navCta": {
+      "primary": { "label": "Start trial", "href": "/trial" },
+      "secondary": { "label": "Contact sales", "href": "/contact" }
+    },
+    "footerCta": {
+      "heading": "Need more seats or advanced features?",
+      "description": "Talk to our team for volume pricing and enterprise support.",
+      "cta": { "label": "Get in touch", "href": "/enterprise" }
+    },
+    "stats": {
+      "items": [
+        { "label": "Active users", "value": "—", "trend": "up", "subtext": "This month" },
+        { "label": "API calls", "value": "—", "trend": "neutral", "subtext": "Last 30 days" },
+        { "label": "Storage used", "value": "—", "trend": "up", "subtext": "Of 500 GB" }
+      ]
+    },
+    "recommendations": {
+      "title": "Suggested actions",
+      "list": [
+        { "id": "r1", "text": "Review pending approvals", "href": "/approvals", "priority": "high" },
+        { "id": "r2", "text": "Complete security checklist", "href": "/security", "priority": "medium" },
+        { "id": "r3", "text": "Invite team members", "href": "/invite", "priority": "low" }
+      ]
+    }
+  },
+  "B": {
+    "hero": {
+      "title": "Startup dashboard",
+      "subtitle": "Quick stats and growth metrics.",
+      "cta": { "label": "See metrics", "href": "/metrics" },
+      "badge": "Starter"
+    },
+    "promo": {
+      "headline": "Get started",
+      "body": "Explore resources and tips to grow.",
+      "variant": "standard",
+      "actions": [{ "label": "View guide", "href": "/guide" }]
+    },
+    "banner": {
+      "type": "tip",
+      "message": "Pro tip: Connect your first integration to see live data here.",
+      "dismissible": true,
+      "link": { "text": "Integrations", "href": "/integrations" }
+    },
+    "featured": {
+      "title": "Popular resources",
+      "items": [
+        { "id": "f1", "title": "Quick start guide", "description": "Set up your account in minutes.", "href": "/quickstart" },
+        { "id": "f2", "title": "Documentation", "description": "APIs, guides and examples.", "href": "/docs" },
+        { "id": "f3", "title": "Community", "description": "Ask questions and share ideas.", "href": "/community" }
+      ]
+    },
+    "navCta": {
+      "primary": { "label": "Upgrade", "href": "/upgrade" },
+      "secondary": { "label": "Help", "href": "/help" }
+    },
+    "footerCta": {
+      "heading": "Ready to scale?",
+      "description": "Upgrade to get more projects, team members and priority support.",
+      "cta": { "label": "View plans", "href": "/pricing" }
+    },
+    "stats": {
+      "items": [
+        { "label": "Projects", "value": "—", "trend": "up", "subtext": "Active" },
+        { "label": "Members", "value": "—", "trend": "neutral", "subtext": "In your team" },
+        { "label": "Storage", "value": "—", "trend": "up", "subtext": "Of 10 GB" }
+      ]
+    },
+    "recommendations": {
+      "title": "Next steps",
+      "list": [
+        { "id": "r1", "text": "Complete your profile", "href": "/profile", "priority": "high" },
+        { "id": "r2", "text": "Create your first project", "href": "/projects/new", "priority": "high" },
+        { "id": "r3", "text": "Invite a collaborator", "href": "/invite", "priority": "medium" }
+      ]
+    }
+  }
+}

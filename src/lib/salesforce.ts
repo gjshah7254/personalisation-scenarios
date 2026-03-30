@@ -9,6 +9,7 @@ import type { Segment } from "@/lib/types";
 import { getMockApiBaseUrl } from "@/lib/mock-api-base-url";
 import salesforceMockFallback from "@/data/salesforce-mock.json";
 import segmentPersonalisedComponentsFallback from "@/data/segment-personalised-components.json";
+import playerIdMappingFallback from "@/data/player-id-mock.json";
 
 type SalesforceMock = {
   userSegments?: Record<string, Segment>;
@@ -91,6 +92,33 @@ export async function getSalesforceUserContextCached(
   return unstable_cache(
     async () => getSalesforceUserContext(email),
     ["salesforce-user-context", email],
+    { revalidate: 60 }
+  )();
+}
+
+const playerIdToEmail = playerIdMappingFallback as Record<string, string>;
+
+/** Resolve email from playerId (mock mapping for mobile Scenario 5). */
+export function getEmailByPlayerId(playerId: string): string | null {
+  return playerIdToEmail[playerId] ?? null;
+}
+
+/** User context by playerId (for mobile API). Uses playerId→email mapping then SF context. */
+export async function getSalesforceUserContextByPlayerId(
+  playerId: string
+): Promise<SalesforceUserContext | null> {
+  const email = getEmailByPlayerId(playerId);
+  if (!email) return null;
+  return getSalesforceUserContext(email);
+}
+
+/** Cached user context by playerId (unstable_cache). Used by GET /api/personalised-content. */
+export async function getSalesforceUserContextByPlayerIdCached(
+  playerId: string
+): Promise<SalesforceUserContext | null> {
+  return unstable_cache(
+    async () => getSalesforceUserContextByPlayerId(playerId),
+    ["salesforce-user-context-by-player", playerId],
     { revalidate: 60 }
   )();
 }

@@ -6,6 +6,7 @@ import {
   type MobileScenarioSlug,
 } from "../mobile-scenarios";
 import { MobileContentApiButton } from "../MobileContentApiButton";
+import { MobilePersonalisedContentButton } from "../MobilePersonalisedContentButton";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -34,6 +35,7 @@ export default async function MobileScenarioDetailPage({ params }: PageProps) {
       </div>
 
       {scenario.slug === "middleware-header" && <MobileContentApiButton />}
+      {scenario.slug === "playerid-header" && <MobilePersonalisedContentButton />}
 
       <section className="rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
         <h2 className="text-lg font-semibold text-white">URL shape</h2>
@@ -51,11 +53,17 @@ export default async function MobileScenarioDetailPage({ params }: PageProps) {
       <section className="rounded-xl border border-zinc-700 bg-zinc-900/80 p-6">
         <h2 className="text-lg font-semibold text-white">Salesforce integration</h2>
         <p className="mt-2 text-sm text-zinc-300">
-          User context (segment, which components to personalise) is always sourced from Salesforce.
-          The app uses a mock API (<code className="rounded bg-zinc-800 px-1">GET /api/salesforce/user-context</code>)
-          until real credentials are available. Mobile clients should resolve the user (e.g. from auth),
-          then call the user-context API (or equivalent Salesforce API) to get segment and personalised
-          component IDs before requesting scenario-specific resources.
+          {scenario.salesforceIntegration ? (
+            scenario.salesforceIntegration
+          ) : (
+            <>
+              User context (segment, which components to personalise) is always sourced from Salesforce.
+              The app uses a mock API (<code className="rounded bg-zinc-800 px-1">GET /api/salesforce/user-context</code>)
+              until real credentials are available. Mobile clients should resolve the user (e.g. from auth),
+              then call the user-context API (or equivalent Salesforce API) to get segment and personalised
+              component IDs before requesting scenario-specific resources.
+            </>
+          )}
         </p>
       </section>
 

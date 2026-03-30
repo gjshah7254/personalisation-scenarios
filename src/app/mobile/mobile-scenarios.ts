@@ -3,6 +3,7 @@ export const mobileScenarioSlugs = [
   "segment-in-url",
   "vary-header",
   "middleware-header",
+  "playerid-header",
 ] as const;
 export type MobileScenarioSlug = (typeof mobileScenarioSlugs)[number];
 
@@ -15,6 +16,8 @@ export interface MobileScenarioDetail {
   urlExamples: string[];
   technicalSteps: string[];
   vercelUsage: string[];
+  /** Optional: override default Salesforce integration paragraph for this scenario. */
+  salesforceIntegration?: string;
 }
 
 export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDetail> = {
@@ -115,5 +118,31 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
     vercelUsage: [
       "First request per segment: 1 Edge Middleware + 1 serverless invocation; repeat same segment: CDN HIT if Vary: x-segment is preserved by the edge.",
     ],
+  },
+  "playerid-header": {
+    slug: "playerid-header",
+    title: "Scenario 5: Player ID in header",
+    subtitle: "Next.js calls Salesforce and caches per user, no CDN cache",
+    description:
+      "Mobile sends playerId in a header (e.g. X-Player-Id). The Next.js app calls Salesforce for user context (cached by playerId), evaluates personalisation, and returns JSON. Each component in the response is cached separately per (playerId, componentId). Response is not CDN-cacheable because identity is in the header.",
+    urlShape: "GET /api/personalised-content (header: X-Player-Id)",
+    urlExamples: [
+      "GET /api/personalised-content with header X-Player-Id: player-1",
+      "GET /api/personalised-content with header X-Player-Id: player-2",
+    ],
+    technicalSteps: [
+      "Mobile has playerId after login and sends it on every request via header (e.g. X-Player-Id). Mobile does not call Salesforce.",
+      "Next.js API route reads playerId from the request header.",
+      "Route looks up Salesforce user context by playerId (mock: GET /api/mock/salesforce/user-context-by-player?playerId=...). Result is cached in the app by playerId (e.g. unstable_cache) so repeat requests do not refetch Salesforce.",
+      "Next.js evaluates user context (segment, which components to personalise). All personalisation logic lives in the app.",
+      "For each component in the response, route looks up content (e.g. from mock Contentful by segment + componentId). Each component result is cached in the app by (playerId, componentId).",
+      "Route returns a single JSON payload (e.g. { hero: {...}, promo: {...} }). Response uses Cache-Control: private, no-store because identity is in the header.",
+    ],
+    vercelUsage: [
+      "No CDN cache for the API response (identity in header). Every request hits the Next.js app.",
+      "App cache (Data Cache / unstable_cache): user context by playerId, and each component by (playerId, componentId). Reduces Salesforce and backend calls after first request per user or per component.",
+    ],
+    salesforceIntegration:
+      "Next.js calls Salesforce (mock: GET /api/mock/salesforce/user-context-by-player?playerId=...) to get user context by playerId. Mobile does not call Salesforce; it only sends X-Player-Id. Component content is sourced from the Contentful mock (GET /api/mock/contentful/component?segment=...&componentId=...).",
   },
 };

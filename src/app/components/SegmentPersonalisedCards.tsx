@@ -1,6 +1,6 @@
 import { getSegmentFromCookie } from "@/lib/cookies";
 import type { Segment } from "@/lib/types";
-import { getMockApiBaseUrl } from "@/lib/mock-api-base-url";
+import { getRequestMockApiBaseUrl } from "@/lib/mock-api-base-url";
 
 type ContentfulEntry = { id: string; title: string; body: string };
 
@@ -20,10 +20,26 @@ export async function SegmentPersonalisedCards() {
     );
   }
 
-  const base = getMockApiBaseUrl();
-  const res = await fetch(`${base}/api/mock/contentful/entries?segment=${segment}`);
-  const data = (await res.json()) as { segment: Segment; entries: ContentfulEntry[] };
-  const entries = data.entries ?? [];
+  let entries: ContentfulEntry[] = [];
+  try {
+    const base = await getRequestMockApiBaseUrl();
+    const res = await fetch(
+      `${base}/api/mock/contentful/entries?segment=${encodeURIComponent(segment)}`,
+    );
+    if (!res.ok) throw new Error(`entries API ${res.status}`);
+    const ct = res.headers.get("content-type") ?? "";
+    if (!ct.includes("application/json")) throw new Error("entries API not JSON");
+    const data = (await res.json()) as { segment: Segment; entries: ContentfulEntry[] };
+    entries = data.entries ?? [];
+  } catch {
+    return (
+      <p className="text-sm text-red-400">
+        Could not load personalised cards (mock Contentful entries). If you run the dev server on a
+        non-default port, avoid relying on <code className="rounded bg-zinc-700 px-1">NEXT_PUBLIC_APP_URL</code>{" "}
+        alone for server fetches — this component uses the request host instead.
+      </p>
+    );
+  }
 
   return (
     <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
