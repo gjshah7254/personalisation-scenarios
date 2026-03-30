@@ -76,7 +76,7 @@ const getComponentContentCached = unstable_cache(
  * Mobile BFF API — assembled personalised JSON (Scenario 5: bff-personalised-json).
  * Reads X-Player-Id, fetches Salesforce user context (cached by playerId),
  * returns JSON with per-component content (each cached per playerId + componentId).
- * Opt-in NDJSON: ?format=ndjson or Accept: application/x-ndjson.
+ * Opt-in NDJSON: ?format=ndjson or Accept: application/x-ndjson — lines: order (componentIds), meta, component (×N), done.
  * Response is not CDN-cacheable (identity in header).
  */
 export async function GET(request: Request) {
@@ -106,6 +106,14 @@ export async function GET(request: Request) {
     const stream = new ReadableStream({
       async start(controller) {
         try {
+          controller.enqueue(
+            enc.encode(
+              `${JSON.stringify({
+                type: "order",
+                componentIds: [...PERSONALISED_COMPONENT_IDS],
+              })}\n`
+            )
+          );
           controller.enqueue(
             enc.encode(
               `${JSON.stringify({

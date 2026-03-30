@@ -5,6 +5,7 @@ import { useState } from "react";
 const PLAYER_IDS = ["player-1", "player-2", "player-3", "player-4"] as const;
 
 type NdjsonRecord =
+  | { type: "order"; componentIds: string[] }
   | { type: "meta"; segment: string; user: { name: string; email: string } }
   | { type: "component"; id: string; content: Record<string, unknown> | null }
   | { type: "error"; componentId: string; message: string }
@@ -130,9 +131,9 @@ export function MobilePersonalisedContentButton() {
         the <code className="rounded bg-zinc-700 px-1.5 py-0.5 text-indigo-300">X-Player-Id</code> header.
         Use <code className="rounded bg-zinc-700 px-1.5 py-0.5 text-indigo-300">?format=ndjson</code> or{" "}
         <code className="rounded bg-zinc-700 px-1.5 py-0.5 text-indigo-300">Accept: application/x-ndjson</code> for a
-        newline-delimited stream (<code className="text-indigo-300">meta</code>, then each{" "}
-        <code className="text-indigo-300">component</code> as it completes, then <code className="text-indigo-300">done</code>
-        ).
+        newline-delimited stream: <code className="text-indigo-300">order</code> (static <code className="text-indigo-300">componentIds</code>), then{" "}
+        <code className="text-indigo-300">meta</code>, then <code className="text-indigo-300">component</code> lines (arrival order), then{" "}
+        <code className="text-indigo-300">done</code>.
       </p>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <label className="text-sm text-zinc-400">

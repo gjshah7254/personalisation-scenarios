@@ -129,7 +129,7 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
       "GET /api/personalised-content (header: X-Player-Id); optional ?format=ndjson or Accept: application/x-ndjson",
     urlExamples: [
       "GET /api/personalised-content with header X-Player-Id: player-1",
-      "GET /api/personalised-content?format=ndjson with same header — NDJSON stream (meta, then each component line, then done)",
+      "GET /api/personalised-content?format=ndjson with same header — NDJSON: order (static componentIds), meta, component lines, done",
       "POST /api/personalised-content — demo: revalidateTag(personalised-content) to clear Data Cache for this flow",
     ],
     technicalSteps: [
@@ -139,7 +139,7 @@ export const mobileScenariosDetail: Record<MobileScenarioSlug, MobileScenarioDet
       "Next.js evaluates user context (segment, which components to personalise). All personalisation logic lives in the app.",
       "For each component in the response, route looks up content (e.g. from mock Contentful by segment + componentId). Each component result is cached in the app by (playerId, componentId).",
       "Default response: single JSON payload (e.g. { hero: {...}, promo: {...} }) with Cache-Control: private, no-store.",
-      "Optional NDJSON: query format=ndjson or Accept application/x-ndjson — chunked application/x-ndjson body, one JSON object per line: type meta, then type component (as each finishes in parallel), then type done.",
+      "Optional NDJSON: query format=ndjson or Accept application/x-ndjson — one JSON object per line: type order (display order), type meta, type component (parallel completion order), type done.",
       "Demo POST clears tagged unstable_cache entries (personalised-content) so the next GET recomputes.",
     ],
     vercelUsage: [
