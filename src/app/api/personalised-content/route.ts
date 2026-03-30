@@ -28,19 +28,11 @@ function wantsNdjson(request: Request): boolean {
 }
 
 /**
- * Simulated CMS/generation latency per slot — only on unstable_cache MISS.
- * With Promise.all, total time is roughly max(ms) for this screen (~3.5s), not the sum.
+ * Simulated CMS/generation latency — only on unstable_cache MISS.
+ * Each component waits a random duration in [1s, 3s]. With Promise.all, wall time is ~max of those draws (~3s).
  */
-const COMPONENT_GENERATION_DELAY_MS_BY_ID: Record<string, number> = {
-  hero: 1200,
-  promo: 1500,
-  banner: 1800,
-  featured: 2100,
-  navCta: 2400,
-  footerCta: 2700,
-  stats: 3000,
-  recommendations: 3500,
-};
+const COMPONENT_GENERATION_DELAY_MIN_MS = 1000;
+const COMPONENT_GENERATION_DELAY_MAX_MS = 3000;
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -48,8 +40,10 @@ function delay(ms: number): Promise<void> {
   });
 }
 
-function delayMsForComponent(componentId: string): number {
-  return COMPONENT_GENERATION_DELAY_MS_BY_ID[componentId] ?? 3000;
+function randomComponentDelayMs(): number {
+  const span =
+    COMPONENT_GENERATION_DELAY_MAX_MS - COMPONENT_GENERATION_DELAY_MIN_MS + 1;
+  return COMPONENT_GENERATION_DELAY_MIN_MS + Math.floor(Math.random() * span);
 }
 
 /**
@@ -59,7 +53,7 @@ function delayMsForComponent(componentId: string): number {
  */
 const getComponentContentCached = unstable_cache(
   async (playerId: string, componentId: string): Promise<ComponentContent | null> => {
-    await delay(delayMsForComponent(componentId));
+    await delay(randomComponentDelayMs());
     const ctx = await getSalesforceUserContextByPlayerIdCached(playerId);
     if (!ctx) return null;
     const segment = ctx.segment as Segment;
