@@ -27,6 +27,12 @@ function wantsNdjson(request: Request): boolean {
   return accept.includes("application/x-ndjson");
 }
 
+/** Omit simulated delay on cache miss: `?skipDelay=1` or `?skipDelay=true` (separate unstable_cache keys from delayed fetches). */
+function wantsSkipDelay(request: Request): boolean {
+  const v = new URL(request.url).searchParams.get("skipDelay")?.toLowerCase();
+  return v === "1" || v === "true";
+}
+
 /**
  * Simulated CMS/generation latency — only on unstable_cache MISS.
  * Each component waits a random duration in [1s, 3s]. With Promise.all, wall time is ~max of those draws (~3s).
@@ -48,12 +54,16 @@ function randomComponentDelayMs(): number {
 
 /**
  * One module-level unstable_cache wrapper so the Data Cache key is stable across requests.
- * Invocation args (playerId, componentId) are part of the cache key (see Next.js unstable_cache).
+ * Invocation args (playerId, componentId, skipDelay) are part of the cache key (see Next.js unstable_cache).
  * Do not wrap unstable_cache inside a per-call helper — that breaks HITs on repeat requests.
  */
 const getComponentContentCached = unstable_cache(
-  async (playerId: string, componentId: string): Promise<ComponentContent | null> => {
-    await delay(randomComponentDelayMs());
+  async (
+    playerId: string,
+    componentId: string,
+    skipDelay: boolean
+  ): Promise<ComponentContent | null> => {
+    if (!skipDelay) await delay(randomComponentDelayMs());
     const ctx = await getSalesforceUserContextByPlayerIdCached(playerId);
     if (!ctx) return null;
     const segment = ctx.segment as Segment;
@@ -71,9 +81,11 @@ const getComponentContentCached = unstable_cache(
  * Reads X-Player-Id, fetches Salesforce user context (cached by playerId),
  * returns JSON with per-component content (each cached per playerId + componentId).
  * Opt-in NDJSON: ?format=ndjson or Accept: application/x-ndjson — lines: order (componentIds), meta, component (×N), done.
+ * Optional ?skipDelay=1 (or true): skip simulated 1–3s per-component delay on cache miss.
  * Response is not CDN-cacheable (identity in header).
  */
 export async function GET(request: Request) {
+  const skipDelay = wantsSkipDelay(request);
   const playerId = request.headers.get("x-player-id")?.trim() ?? request.headers.get("X-Player-Id")?.trim();
   if (!playerId) {
     return Response.json(
@@ -121,7 +133,11 @@ export async function GET(request: Request) {
           await Promise.all(
             componentIds.map(async (componentId) => {
               try {
-                const content = await getComponentContentCached(playerId, componentId);
+                const content = await getComponentContentCached(
+                  playerId,
+                  componentId,
+                  skipDelay
+                );
                 controller.enqueue(
                   enc.encode(
                     `${JSON.stringify({ type: "component", id: componentId, content })}\n`
@@ -162,7 +178,11 @@ export async function GET(request: Request) {
   const componentEntries = await Promise.all(
     componentIds.map(async (componentId) => {
       try {
-        const content = await getComponentContentCached(playerId, componentId);
+        const content = await getComponentContentCached(
+          playerId,
+          componentId,
+          skipDelay
+        );
         return [componentId, content] as const;
       } catch {
         return [componentId, null] as const;

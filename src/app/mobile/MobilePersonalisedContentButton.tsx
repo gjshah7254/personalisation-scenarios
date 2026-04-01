@@ -11,6 +11,14 @@ type NdjsonRecord =
   | { type: "error"; componentId: string; message: string }
   | { type: "done" };
 
+function personalisedContentUrl(opts: { ndjson: boolean; skipDelay: boolean }): string {
+  const q = new URLSearchParams();
+  if (opts.ndjson) q.set("format", "ndjson");
+  if (opts.skipDelay) q.set("skipDelay", "1");
+  const s = q.toString();
+  return s ? `/api/personalised-content?${s}` : "/api/personalised-content";
+}
+
 function parseNdjsonLines(buffer: string): { lines: NdjsonRecord[]; rest: string } {
   const parts = buffer.split("\n");
   const rest = parts.pop() ?? "";
@@ -29,20 +37,23 @@ function parseNdjsonLines(buffer: string): { lines: NdjsonRecord[]; rest: string
 
 export function MobilePersonalisedContentButton() {
   const [playerId, setPlayerId] = useState<string>(PLAYER_IDS[0]);
-  const [loading, setLoading] = useState(false);
+  const [jsonKind, setJsonKind] = useState<null | "withDelay" | "skipDelay">(null);
+  const [ndjsonKind, setNdjsonKind] = useState<null | "withDelay" | "skipDelay">(null);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<unknown>(null);
   const [ndjsonLog, setNdjsonLog] = useState<NdjsonRecord[]>([]);
-  const [streamBusy, setStreamBusy] = useState(false);
   const [cacheMessage, setCacheMessage] = useState<string | null>(null);
 
-  async function handleFetchJson() {
-    setLoading(true);
+  const jsonBusy = jsonKind !== null;
+  const streamBusy = ndjsonKind !== null;
+
+  async function handleFetchJson(skipDelay: boolean) {
+    setJsonKind(skipDelay ? "skipDelay" : "withDelay");
     setError(null);
     setData(null);
     setNdjsonLog([]);
     try {
-      const res = await fetch("/api/personalised-content", {
+      const res = await fetch(personalisedContentUrl({ ndjson: false, skipDelay }), {
         headers: { "X-Player-Id": playerId },
         cache: "no-store",
       });
@@ -56,17 +67,17 @@ export function MobilePersonalisedContentButton() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Request failed");
     } finally {
-      setLoading(false);
+      setJsonKind(null);
     }
   }
 
-  async function handleFetchNdjson() {
-    setStreamBusy(true);
+  async function handleFetchNdjson(skipDelay: boolean) {
+    setNdjsonKind(skipDelay ? "skipDelay" : "withDelay");
     setError(null);
     setData(null);
     setNdjsonLog([]);
     try {
-      const res = await fetch(`/api/personalised-content?format=ndjson`, {
+      const res = await fetch(personalisedContentUrl({ ndjson: true, skipDelay }), {
         headers: { "X-Player-Id": playerId },
         cache: "no-store",
       });
@@ -99,7 +110,7 @@ export function MobilePersonalisedContentButton() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Stream failed");
     } finally {
-      setStreamBusy(false);
+      setNdjsonKind(null);
     }
   }
 
@@ -133,7 +144,8 @@ export function MobilePersonalisedContentButton() {
         <code className="rounded bg-zinc-700 px-1.5 py-0.5 text-indigo-300">Accept: application/x-ndjson</code> for a
         newline-delimited stream: <code className="text-indigo-300">order</code> (static <code className="text-indigo-300">componentIds</code>), then{" "}
         <code className="text-indigo-300">meta</code>, then <code className="text-indigo-300">component</code> lines (arrival order), then{" "}
-        <code className="text-indigo-300">done</code>.
+        <code className="text-indigo-300">done</code>. Optional <code className="rounded bg-zinc-700 px-1.5 py-0.5 text-indigo-300">?skipDelay=1</code>{" "}
+        skips the simulated 1–3s per-component delay on cache miss.
       </p>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <label className="text-sm text-zinc-400">
@@ -152,24 +164,40 @@ export function MobilePersonalisedContentButton() {
         </label>
         <button
           type="button"
-          onClick={() => handleFetchJson()}
-          disabled={loading || streamBusy}
+          onClick={() => handleFetchJson(false)}
+          disabled={jsonBusy || streamBusy}
           className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 disabled:opacity-50"
         >
-          {loading ? "Loading…" : "Fetch JSON (8 components)"}
+          {jsonKind === "withDelay" ? "Loading…" : "Fetch JSON (with delay)"}
         </button>
         <button
           type="button"
-          onClick={handleFetchNdjson}
-          disabled={loading || streamBusy}
+          onClick={() => handleFetchJson(true)}
+          disabled={jsonBusy || streamBusy}
+          className="rounded-lg bg-indigo-500/90 px-4 py-2 text-sm font-medium text-white ring-1 ring-indigo-400/40 transition hover:bg-indigo-500 disabled:opacity-50"
+        >
+          {jsonKind === "skipDelay" ? "Loading…" : "Fetch JSON (skip delay)"}
+        </button>
+        <button
+          type="button"
+          onClick={() => handleFetchNdjson(false)}
+          disabled={jsonBusy || streamBusy}
           className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-500 disabled:opacity-50"
         >
-          {streamBusy ? "Streaming…" : "Fetch NDJSON stream"}
+          {ndjsonKind === "withDelay" ? "Streaming…" : "Fetch NDJSON (with delay)"}
+        </button>
+        <button
+          type="button"
+          onClick={() => handleFetchNdjson(true)}
+          disabled={jsonBusy || streamBusy}
+          className="rounded-lg bg-cyan-500/90 px-4 py-2 text-sm font-medium text-white ring-1 ring-cyan-400/40 transition hover:bg-cyan-500 disabled:opacity-50"
+        >
+          {ndjsonKind === "skipDelay" ? "Streaming…" : "Fetch NDJSON (skip delay)"}
         </button>
         <button
           type="button"
           onClick={handleClearCache}
-          disabled={loading || streamBusy}
+          disabled={jsonBusy || streamBusy}
           className="rounded-lg border border-zinc-600 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-200 transition hover:bg-zinc-700 disabled:opacity-50"
         >
           Clear Next.js data cache
