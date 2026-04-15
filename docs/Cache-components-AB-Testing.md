@@ -13,12 +13,12 @@ sequenceDiagram
     B->>APP: POST /api/auth (playerID)
     APP->>SF: Get user context by playerID
     SF-->>APP: User context (segment, AB test page assignments)
-    APP-->>B: Set-Cookie segment=A + Set-Cookie ab-tests=encoded JSON
-    Note over B,APP: Salesforce called once at session start.<br />Two cookies set:<br />segment for personalisation (Cache Components)<br />ab-tests for full-page AB testing (middleware)
+    APP-->>B: Set-Cookie ab-tests=encoded JSON (AB assignments only)
+    Note over B,APP: Salesforce called once at session start.<br />Cookies store AB testing values only (for middleware).<br />Personalisation uses user context resolved in the app (e.g. by playerID), not a separate Salesforce cookie.
 
     %% --- Page request with AB check ---
     U->>B: Navigate to /page
-    B->>MW: GET /page with cookies (segment, ab-tests, playerID)
+    B->>MW: GET /page with cookies (ab-tests, playerID)
 
     alt Page has active AB test (found in ab-tests cookie)
         MW->>MW: Read ab-tests cookie and find variant for /page
