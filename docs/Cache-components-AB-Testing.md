@@ -2,35 +2,38 @@ sequenceDiagram
     autonumber
     actor U as Web User
     participant B as Browser
-    participant Edge as Vercel Edge Middleware
+    participant MW as Vercel Edge Middleware
     participant CDN as Vercel CDN
     participant APP as Vercel NextJs App
-    participant SF as Salesforce MCP
+    participant SF as Salesforce
     participant CF as Contentful
 
-    Note over U,SF: LOGIN — A/B assignment (SF MCP is source of truth)
-    U->>B: Login
-    B->>APP: POST /api/auth/login
-    APP->>SF: Send login event (userId, sessionId)
-    SF-->>APP: Personalisation payload incl. testPath per page
-    APP->>APP: Extract A/B map { "/page": "/page-v2", ... } and sign as JWT
-    APP-->>B: Auth session + _ab cookie (JWT, httpOnly, secure)
+    %% --- One-off login ---
+    U->>B: Sign in
+    B->>APP: POST /api/auth (playerID)
+    APP->>SF: Get user context by playerID
+    SF-->>APP: User context (segment, AB test page assignments)
+    APP-->>B: Set-Cookie segment=A + Set-Cookie ab-tests=encoded JSON
+    Note over B,APP: Salesforce called once at session start.<br />Two cookies set:<br />segment for personalisation (Cache Components)<br />ab-tests for full-page AB testing (middleware)
 
-    Note over U,CF: PAGE REQUEST
+    %% --- Page request with AB check ---
     U->>B: Navigate to /page
-    B->>Edge: GET /page with playerID + _ab cookie
-    Edge->>Edge: Verify _ab cookie and lookup pathname in assignments
-    alt No _ab cookie or no assignment for /page
-        Edge->>CDN: Pass through — GET /page (playerID only)
-    else Assignment found — e.g. /page-v2
-        Edge->>CDN: Rewrite — GET /page-v2 (playerID only, browser URL unchanged)
+    B->>MW: GET /page with cookies (segment, ab-tests, playerID)
+
+    alt Page has active AB test (found in ab-tests cookie)
+        MW->>MW: Read ab-tests cookie and find variant for /page
+        MW->>CDN: Rewrite to /page-variant-B (variant route)
+        Note over MW,CDN: Middleware rewrites URL for AB pages only.<br />CDN caches the full response per variant URL.
+    else No AB test for this page
+        MW->>CDN: Pass through unchanged (GET /page)
+        Note over MW,CDN: No rewrite needed.<br />Pure Cache Components path.
     end
 
-    Note over CDN: Check edge cache for shell (control or variant slug)
-    CDN->>APP: GET /page or /page-v2 [CDN MISS]
+    Note over CDN: Check edge cache for URL<br />(original or rewritten).<br />If HIT serve instantly.<br />If MISS fetch from App.
+    CDN->>APP: GET /page or /page-variant-B (playerID only) [CDN MISS]
 
     alt Static shell only (no dynamic components)
-        Note over APP: No playerID or Salesforce — shell is generic
+        Note over APP: No playerID or Salesforce - shell is generic
         APP->>APP: Build static shell (header, footer, 3rd party)
         alt Shell content in app cache
             APP->>APP: Use cached shell content
@@ -53,6 +56,9 @@ sequenceDiagram
             SF-->>APP: User context (segment, ctxKey, attributes)
             APP->>APP: Store user context in cache
         end
+
+        Note over APP: If AB page: parse variant from rewritten URL.<br />Use Cache Component with variant as input<br />for page layout (cached per variant).
+
         Note over APP: For each personalised component on page:<br />lookup cache per component (keyed by user context)
         alt Component cache HIT (cached for this user context)
             APP->>APP: Use cached component output
@@ -66,8 +72,3 @@ sequenceDiagram
         CDN-->>B: [Stream] Send personalised sections
         B-->>U: Server-rendered personalised blocks appear
     end
-
-    Note over U,APP: LOGOUT — clear A/B assignment
-    U->>B: Logout
-    B->>APP: POST /api/auth/logout
-    APP-->>B: Clear _ab cookie
