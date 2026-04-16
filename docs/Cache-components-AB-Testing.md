@@ -8,13 +8,21 @@ sequenceDiagram
     participant SF as Salesforce
     participant CF as Contentful
 
-    %% --- One-off login ---
+    %% --- Seed AB cookie + cache full Salesforce user context (only if ab-tests cookie missing) ---
     U->>B: Sign in
-    B->>APP: POST /api/auth (playerID)
-    APP->>SF: Get user context by playerID
-    SF-->>APP: User context (segment, AB test page assignments)
-    APP-->>B: Set-Cookie ab-tests=encoded JSON (AB assignments only)
-    Note over B,APP: Salesforce called once at session start.<br />Cookies store AB testing values only (for middleware).<br />Personalisation uses user context resolved in the app (e.g. by playerID), not a separate Salesforce cookie.
+    alt No ab-tests cookie
+        B->>APP: POST /api/salesforce/ab-tests-cookie (cookie: playerID)
+        alt No Salesforce user context in app cache for this playerID
+            APP->>SF: Fetch user context (full context for personalisation)
+            SF-->>APP: Full Salesforce user context
+            APP->>APP: Cache entire user context in app cache (per playerID)
+        else Salesforce user context already in app cache (per playerID)
+            APP->>APP: Use cached Salesforce user context
+        end
+        APP-->>B: Set-Cookie ab-tests JSON (AB assignments only)
+    else ab-tests cookie already set
+        Note over B,APP: Skip POST /api/salesforce/ab-tests-cookie as AB Tests values already in cookie.
+    end
 
     %% --- Page request with AB check ---
     U->>B: Navigate to /page
@@ -23,23 +31,21 @@ sequenceDiagram
     alt Page has active AB test (found in ab-tests cookie)
         MW->>MW: Read ab-tests cookie and find variant for /page
         MW->>CDN: Rewrite to /page-variant-B (variant route)
-        Note over MW,CDN: Middleware rewrites URL for AB pages only.<br />CDN caches the full response per variant URL.
     else No AB test for this page
         MW->>CDN: Pass through unchanged (GET /page)
-        Note over MW,CDN: No rewrite needed.<br />Pure Cache Components path.
     end
 
-    Note over CDN: Check edge cache for URL<br />(original or rewritten).<br />If HIT serve instantly.<br />If MISS fetch from App.
+    Note over CDN: Check edge cache for URL. <br />If HIT serve static shell instantly.<br />If MISS fetch from App.
     CDN->>APP: GET /page or /page-variant-B (playerID only) [CDN MISS]
 
     alt Static shell only (no dynamic components)
         Note over APP: No playerID or Salesforce - shell is generic
-        APP->>APP: Build static shell (header, footer, 3rd party)
+        APP->>APP: Build static shell (header, footer, mule components, 3rd party)
         alt Shell content in app cache
             APP->>APP: Use cached shell content
         else Shell content cache MISS
             APP->>CF: Fetch content for static shell
-            CF-->>APP: Content for shell (nav, footer, etc.)
+            CF-->>APP: Content for shell (header, footer, mule components, etc.)
             APP->>APP: Store shell content in cache
         end
         APP-->>CDN: [Static] Shell response only
